@@ -1,0 +1,56 @@
+/* Simple CSS reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #FFFFFF;
+}
+
+/* Initially hide the new game button */
+#new-game-button {
+    display: none;
+}
+
+/* Temporary visible borders for development layout visibility */
+#score-display {
+    border: 2px solid #ff0000;
+    background-color: #ffe6e6;
+    padding: 10px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+#question-area {
+    border: 2px solid #0000ff;
+    background-color: #e6e6ff;
+    padding: 20px;
+    margin: 80px auto 20px auto;
+    text-align: center;
+    min-height: 200px;
+    width: 400px;
+}
+
+#options-area {
+    border: 2px solid #00ff00;
+    background-color: #e6ffe6;
+    padding: 20px;
+    margin: 20px auto;
+    text-align: center;
+    min-height: 150px;
+    width: 600px;
+}
+
+#feedback-area {
+    border: 2px solid #ff8800;
+    background-color: #fff2e6;
+    padding: 20px;
+    margin: 20px auto;
+    text-align: center;
+    width: 400px;
+}
