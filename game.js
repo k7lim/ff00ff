@@ -88,3 +88,66 @@ function generateQuestionOptions() {
         distractors: distractors
     };
 }
+
+/**
+ * Fisher-Yates shuffle algorithm for proper randomization
+ * @param {Array} array - Array to shuffle (modifies in place)
+ * @returns {Array} The shuffled array
+ */
+function shuffleArray(array) {
+    const shuffled = [...array]; // Create a copy to avoid modifying original
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+/**
+ * Generates a complete question object with randomized type and shuffled options
+ * @returns {object} Complete question object ready for UI rendering
+ */
+function generateQuestion() {
+    // Determine question type randomly (50/50 chance)
+    const questionTypes = ['identify_color', 'identify_swatch'];
+    const type = questionTypes[Math.floor(Math.random() * 2)];
+    
+    // Get color options from the distinctness algorithm
+    const { correctHex, distractors } = generateQuestionOptions();
+    
+    // Prepare options array with correct structure
+    const allOptions = [];
+    
+    // Add the correct answer option
+    allOptions.push({
+        value: correctHex,
+        isCorrect: true,
+        id: `option_0`
+    });
+    
+    // Add the distractor options
+    distractors.forEach((distractorHex, index) => {
+        allOptions.push({
+            value: distractorHex,
+            isCorrect: false,
+            id: `option_${index + 1}`
+        });
+    });
+    
+    // Randomize option order using Fisher-Yates shuffle
+    const shuffledOptions = shuffleArray(allOptions);
+    
+    // Update IDs to reflect new positions after shuffling
+    const finalOptions = shuffledOptions.map((option, index) => ({
+        ...option,
+        id: `option_${index}`
+    }));
+    
+    // Return the complete question object
+    return {
+        type: type,
+        questionDisplayValue: correctHex,
+        options: finalOptions,
+        correctAnswerHex: correctHex
+    };
+}

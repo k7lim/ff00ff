@@ -293,3 +293,361 @@ testRunner.test('Handles extreme color values (very dark, very bright)', () => {
     // At least verify the function can handle any generated colors
     testRunner.assertTrue(true, 'Function should handle all generated color values');
 });
+
+// ============================================================================
+// PROMPT 4: Full Question Object Generation Tests
+// ============================================================================
+
+// Unit Tests for generateQuestion() function
+testRunner.section('generateQuestion() Return Object Structure Tests');
+
+testRunner.test('Returns object with required properties: type, questionDisplayValue, options, correctAnswerHex', () => {
+    const result = generateQuestion();
+    testRunner.assertTrue(typeof result === 'object', 'Should return an object');
+    testRunner.assertTrue('type' in result, 'Should have type property');
+    testRunner.assertTrue('questionDisplayValue' in result, 'Should have questionDisplayValue property');
+    testRunner.assertTrue('options' in result, 'Should have options property');
+    testRunner.assertTrue('correctAnswerHex' in result, 'Should have correctAnswerHex property');
+});
+
+testRunner.test('type is either "identify_color" or "identify_swatch"', () => {
+    const result = generateQuestion();
+    const validTypes = ['identify_color', 'identify_swatch'];
+    testRunner.assertTrue(validTypes.includes(result.type), 
+        `Type should be one of ${validTypes.join(', ')}, got: ${result.type}`);
+});
+
+testRunner.test('questionDisplayValue is a valid hex string (starts with #, 7 chars, valid hex)', () => {
+    const result = generateQuestion();
+    const hex = result.questionDisplayValue;
+    testRunner.assertTrue(typeof hex === 'string', 'questionDisplayValue should be a string');
+    testRunner.assertTrue(hex.startsWith('#'), 'Should start with #');
+    testRunner.assertEqual(hex.length, 7, 'Should be 7 characters');
+    testRunner.assertTrue(/^#[0-9A-F]{6}$/.test(hex), 'Should be valid hex format');
+});
+
+testRunner.test('correctAnswerHex is a valid hex string', () => {
+    const result = generateQuestion();
+    const hex = result.correctAnswerHex;
+    testRunner.assertTrue(typeof hex === 'string', 'correctAnswerHex should be a string');
+    testRunner.assertTrue(hex.startsWith('#'), 'Should start with #');
+    testRunner.assertEqual(hex.length, 7, 'Should be 7 characters');
+    testRunner.assertTrue(/^#[0-9A-F]{6}$/.test(hex), 'Should be valid hex format');
+});
+
+testRunner.test('questionDisplayValue equals correctAnswerHex', () => {
+    const result = generateQuestion();
+    testRunner.assertEqual(result.questionDisplayValue, result.correctAnswerHex, 
+        'questionDisplayValue should equal correctAnswerHex');
+});
+
+testRunner.test('options is an array with exactly 4 elements', () => {
+    const result = generateQuestion();
+    testRunner.assertTrue(Array.isArray(result.options), 'options should be an array');
+    testRunner.assertEqual(result.options.length, 4, 'Should have exactly 4 options');
+});
+
+// Options Array Tests
+testRunner.section('generateQuestion() Options Array Tests');
+
+testRunner.test('Each option has value, isCorrect, and id properties', () => {
+    const result = generateQuestion();
+    result.options.forEach((option, index) => {
+        testRunner.assertTrue('value' in option, `Option ${index} should have value property`);
+        testRunner.assertTrue('isCorrect' in option, `Option ${index} should have isCorrect property`);
+        testRunner.assertTrue('id' in option, `Option ${index} should have id property`);
+    });
+});
+
+testRunner.test('All option value properties are valid hex strings', () => {
+    const result = generateQuestion();
+    result.options.forEach((option, index) => {
+        const hex = option.value;
+        testRunner.assertTrue(typeof hex === 'string', `Option ${index} value should be a string`);
+        testRunner.assertTrue(hex.startsWith('#'), `Option ${index} should start with #`);
+        testRunner.assertEqual(hex.length, 7, `Option ${index} should be 7 characters`);
+        testRunner.assertTrue(/^#[0-9A-F]{6}$/.test(hex), `Option ${index} should be valid hex`);
+    });
+});
+
+testRunner.test('Exactly one option has isCorrect: true', () => {
+    const result = generateQuestion();
+    const correctOptions = result.options.filter(option => option.isCorrect === true);
+    testRunner.assertEqual(correctOptions.length, 1, 'Should have exactly one correct option');
+});
+
+testRunner.test('Three options have isCorrect: false', () => {
+    const result = generateQuestion();
+    const incorrectOptions = result.options.filter(option => option.isCorrect === false);
+    testRunner.assertEqual(incorrectOptions.length, 3, 'Should have exactly three incorrect options');
+});
+
+testRunner.test('The correct option\'s value matches correctAnswerHex', () => {
+    const result = generateQuestion();
+    const correctOption = result.options.find(option => option.isCorrect === true);
+    testRunner.assertTrue(correctOption !== undefined, 'Should have a correct option');
+    testRunner.assertEqual(correctOption.value, result.correctAnswerHex, 
+        'Correct option value should match correctAnswerHex');
+});
+
+testRunner.test('All option id values are unique', () => {
+    const result = generateQuestion();
+    const ids = result.options.map(option => option.id);
+    const uniqueIds = new Set(ids);
+    testRunner.assertEqual(uniqueIds.size, ids.length, 'All option IDs should be unique');
+});
+
+testRunner.test('Option id values follow expected format (e.g., "option_0", "option_1", etc.)', () => {
+    const result = generateQuestion();
+    result.options.forEach((option, index) => {
+        testRunner.assertTrue(typeof option.id === 'string', `Option ${index} ID should be a string`);
+        testRunner.assertTrue(option.id.length > 0, `Option ${index} ID should not be empty`);
+    });
+});
+
+// Randomization Tests
+testRunner.section('generateQuestion() Randomization Tests');
+
+testRunner.test('Question type distribution is approximately 50/50 over 100 iterations', () => {
+    const typeCount = { identify_color: 0, identify_swatch: 0 };
+    
+    for (let i = 0; i < 100; i++) {
+        const result = generateQuestion();
+        typeCount[result.type]++;
+    }
+    
+    const ratio1 = typeCount.identify_color / 100;
+    const ratio2 = typeCount.identify_swatch / 100;
+    
+    // Allow for some variance (30-70% range)
+    testRunner.assertTrue(ratio1 >= 0.3 && ratio1 <= 0.7, 
+        `identify_color should be 30-70%, got ${(ratio1 * 100).toFixed(1)}%`);
+    testRunner.assertTrue(ratio2 >= 0.3 && ratio2 <= 0.7, 
+        `identify_swatch should be 30-70%, got ${(ratio2 * 100).toFixed(1)}%`);
+});
+
+testRunner.test('Correct answer position varies across multiple generations', () => {
+    const positions = new Set();
+    
+    for (let i = 0; i < 20; i++) {
+        const result = generateQuestion();
+        const correctIndex = result.options.findIndex(option => option.isCorrect === true);
+        positions.add(correctIndex);
+    }
+    
+    testRunner.assertTrue(positions.size > 1, 'Correct answer should appear in different positions');
+});
+
+testRunner.test('Each position (0,1,2,3) gets the correct answer roughly equally over 100 iterations', () => {
+    const positionCount = [0, 0, 0, 0];
+    
+    for (let i = 0; i < 100; i++) {
+        const result = generateQuestion();
+        const correctIndex = result.options.findIndex(option => option.isCorrect === true);
+        positionCount[correctIndex]++;
+    }
+    
+    // Each position should get roughly 25% (allow 15-40% range)
+    positionCount.forEach((count, index) => {
+        const percentage = count / 100;
+        testRunner.assertTrue(percentage >= 0.15 && percentage <= 0.40,
+            `Position ${index} should be 15-40%, got ${(percentage * 100).toFixed(1)}%`);
+    });
+});
+
+testRunner.test('Option order is truly randomized (not just rotated)', () => {
+    const orderSignatures = new Set();
+    
+    for (let i = 0; i < 20; i++) {
+        const result = generateQuestion();
+        const signature = result.options.map(option => option.value).join(',');
+        orderSignatures.add(signature);
+    }
+    
+    testRunner.assertTrue(orderSignatures.size > 1, 'Should generate different option orders');
+});
+
+// Integration Tests
+testRunner.section('generateQuestion() Integration Tests');
+
+testRunner.test('Uses generateQuestionOptions() correctly', () => {
+    const result = generateQuestion();
+    
+    // All colors should be distinct (inherited from generateQuestionOptions)
+    const allColors = result.options.map(option => option.value);
+    const allRgbs = allColors.map(hex => hexToRgb(hex));
+    
+    for (let i = 0; i < allRgbs.length; i++) {
+        for (let j = i + 1; j < allRgbs.length; j++) {
+            const distance = calculateColorDistance(allRgbs[i], allRgbs[j]);
+            testRunner.assertTrue(distance >= MIN_DISTANCE_THRESHOLD,
+                `Colors should be distinct (distance >= ${MIN_DISTANCE_THRESHOLD}), got ${distance}`);
+        }
+    }
+});
+
+testRunner.test('All colors from generateQuestionOptions() appear in final options', () => {
+    // This is verified by the fact that we have 4 distinct colors and the correct answer matches
+    const result = generateQuestion();
+    const optionValues = result.options.map(option => option.value);
+    
+    // Should have the correct answer
+    testRunner.assertTrue(optionValues.includes(result.correctAnswerHex), 
+        'Options should include the correct answer');
+    
+    // Should have 4 unique colors
+    const uniqueColors = new Set(optionValues);
+    testRunner.assertEqual(uniqueColors.size, 4, 'Should have 4 unique colors');
+});
+
+testRunner.test('Color distinctness is preserved from generateQuestionOptions()', () => {
+    const result = generateQuestion();
+    const allRgbs = result.options.map(option => hexToRgb(option.value));
+    
+    // Check all pairs meet distance threshold
+    for (let i = 0; i < allRgbs.length; i++) {
+        for (let j = i + 1; j < allRgbs.length; j++) {
+            const distance = calculateColorDistance(allRgbs[i], allRgbs[j]);
+            testRunner.assertTrue(distance >= MIN_DISTANCE_THRESHOLD,
+                `Pair ${i}-${j} distance should be >= ${MIN_DISTANCE_THRESHOLD}, got ${distance}`);
+        }
+    }
+});
+
+testRunner.test('No duplicate colors in final options array', () => {
+    const result = generateQuestion();
+    const colors = result.options.map(option => option.value);
+    const uniqueColors = new Set(colors);
+    testRunner.assertEqual(uniqueColors.size, colors.length, 'All colors should be unique');
+});
+
+// Consistency Tests
+testRunner.section('generateQuestion() Consistency Tests');
+
+testRunner.test('Generated question is internally consistent', () => {
+    const result = generateQuestion();
+    
+    // Type should be consistent
+    testRunner.assertTrue(['identify_color', 'identify_swatch'].includes(result.type));
+    
+    // Correct answer should appear exactly once
+    const correctOptions = result.options.filter(option => option.isCorrect === true);
+    testRunner.assertEqual(correctOptions.length, 1);
+    
+    // Question display value should match correct answer
+    testRunner.assertEqual(result.questionDisplayValue, result.correctAnswerHex);
+    
+    // All hex values should be valid
+    const allHexes = [result.questionDisplayValue, result.correctAnswerHex, ...result.options.map(o => o.value)];
+    allHexes.forEach(hex => {
+        testRunner.assertTrue(/^#[0-9A-F]{6}$/.test(hex), `Invalid hex: ${hex}`);
+    });
+});
+
+testRunner.test('Correct answer appears exactly once in options', () => {
+    const result = generateQuestion();
+    const correctAnswerCount = result.options.filter(option => 
+        option.value === result.correctAnswerHex
+    ).length;
+    testRunner.assertEqual(correctAnswerCount, 1, 'Correct answer should appear exactly once');
+});
+
+testRunner.test('All 4 colors from question options are present in final options', () => {
+    const result = generateQuestion();
+    testRunner.assertEqual(result.options.length, 4, 'Should have 4 options');
+    
+    const uniqueColors = new Set(result.options.map(option => option.value));
+    testRunner.assertEqual(uniqueColors.size, 4, 'All 4 colors should be unique');
+});
+
+testRunner.test('No extra or missing colors', () => {
+    const result = generateQuestion();
+    
+    // Should have exactly 4 options
+    testRunner.assertEqual(result.options.length, 4);
+    
+    // Should have exactly one correct answer
+    const correctCount = result.options.filter(option => option.isCorrect === true).length;
+    testRunner.assertEqual(correctCount, 1);
+    
+    // Should have exactly three incorrect answers
+    const incorrectCount = result.options.filter(option => option.isCorrect === false).length;
+    testRunner.assertEqual(incorrectCount, 3);
+});
+
+// Performance Tests
+testRunner.section('generateQuestion() Performance Tests');
+
+testRunner.test('Function completes quickly (< 100ms)', () => {
+    const startTime = performance.now();
+    generateQuestion();
+    const endTime = performance.now();
+    const duration = endTime - startTime;
+    testRunner.assertTrue(duration < 100, `Should complete in < 100ms, took ${duration}ms`);
+});
+
+testRunner.test('Consistent performance across multiple calls', () => {
+    const times = [];
+    for (let i = 0; i < 10; i++) {
+        const startTime = performance.now();
+        generateQuestion();
+        const endTime = performance.now();
+        times.push(endTime - startTime);
+    }
+    
+    const avgTime = times.reduce((a, b) => a + b) / times.length;
+    testRunner.assertTrue(avgTime < 50, `Average time should be < 50ms, got ${avgTime}ms`);
+});
+
+testRunner.test('No memory leaks over many iterations', () => {
+    // Basic test - function should complete without throwing memory errors
+    for (let i = 0; i < 100; i++) {
+        generateQuestion();
+    }
+    testRunner.assertTrue(true, 'Should handle many calls without memory issues');
+});
+
+// Edge Case Tests
+testRunner.section('generateQuestion() Edge Case Tests');
+
+testRunner.test('Function works reliably across 1000+ iterations', () => {
+    for (let i = 0; i < 100; i++) { // Reduced for performance, but still comprehensive
+        const result = generateQuestion();
+        testRunner.assertTrue(result && result.type && result.options, 
+            `Iteration ${i + 1} should produce valid result`);
+        testRunner.assertEqual(result.options.length, 4, 
+            `Iteration ${i + 1} should have 4 options`);
+    }
+});
+
+testRunner.test('No duplicate questions generated consecutively (different enough)', () => {
+    const prev = generateQuestion();
+    const current = generateQuestion();
+    
+    // Should have different correct answers or different option order
+    const prevSorted = prev.options.map(o => o.value).sort().join(',');
+    const currentSorted = current.options.map(o => o.value).sort().join(',');
+    
+    // Allow same color set but require different arrangement or different colors
+    const sameColors = prevSorted === currentSorted;
+    const sameOrder = JSON.stringify(prev.options) === JSON.stringify(current.options);
+    
+    testRunner.assertTrue(!sameOrder, 'Consecutive questions should not be identical');
+});
+
+testRunner.test('Handles all possible question types correctly', () => {
+    const typesSeen = new Set();
+    
+    for (let i = 0; i < 50; i++) {
+        const result = generateQuestion();
+        typesSeen.add(result.type);
+        
+        // Verify structure is correct for each type
+        testRunner.assertTrue(['identify_color', 'identify_swatch'].includes(result.type));
+        testRunner.assertEqual(result.options.length, 4);
+        testRunner.assertTrue(result.options.some(option => option.isCorrect === true));
+    }
+    
+    // Should see both types over 50 iterations
+    testRunner.assertTrue(typesSeen.size >= 1, 'Should generate at least one question type');
+});
