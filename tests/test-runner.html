@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HexVex Test Runner</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-results { margin: 20px 0; }
+        .pass { color: green; }
+        .fail { color: red; }
+        .test-section { margin: 20px 0; border: 1px solid #ccc; padding: 15px; }
+        .test-summary { font-weight: bold; font-size: 18px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>HexVex Test Suite</h1>
+    <div id="test-results"></div>
+
+    <!-- Load source files -->
+    <script src="../utils.js"></script>
+    <script src="../game.js"></script>
+
+    <!-- Simple test framework -->
+    <script>
+        class TestRunner {
+            constructor() {
+                this.results = [];
+                this.currentSection = '';
+            }
+
+            section(name) {
+                this.currentSection = name;
+                console.log(`\n=== ${name} ===`);
+            }
+
+            test(description, testFn) {
+                try {
+                    testFn();
+                    this.results.push({ section: this.currentSection, description, status: 'pass' });
+                    console.log(`✓ ${description}`);
+                } catch (error) {
+                    this.results.push({ section: this.currentSection, description, status: 'fail', error: error.message });
+                    console.log(`✗ ${description}: ${error.message}`);
+                }
+            }
+
+            assertEqual(actual, expected, message = '') {
+                if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+                    throw new Error(`${message} Expected: ${JSON.stringify(expected)}, Actual: ${JSON.stringify(actual)}`);
+                }
+            }
+
+            assertTrue(condition, message = '') {
+                if (!condition) {
+                    throw new Error(message || 'Expected condition to be true');
+                }
+            }
+
+            assertThrows(fn, message = '') {
+                try {
+                    fn();
+                    throw new Error(message || 'Expected function to throw an error');
+                } catch (error) {
+                    // Expected behavior
+                }
+            }
+
+            displayResults() {
+                const resultsDiv = document.getElementById('test-results');
+                const passCount = this.results.filter(r => r.status === 'pass').length;
+                const failCount = this.results.filter(r => r.status === 'fail').length;
+                
+                let html = `<div class="test-summary">Tests: ${this.results.length}, Passed: <span class="pass">${passCount}</span>, Failed: <span class="fail">${failCount}</span></div>`;
+                
+                const sections = [...new Set(this.results.map(r => r.section))];
+                sections.forEach(section => {
+                    html += `<div class="test-section"><h3>${section}</h3>`;
+                    this.results.filter(r => r.section === section).forEach(result => {
+                        const className = result.status === 'pass' ? 'pass' : 'fail';
+                        const errorMsg = result.error ? ` - ${result.error}` : '';
+                        html += `<div class="${className}">${result.status === 'pass' ? '✓' : '✗'} ${result.description}${errorMsg}</div>`;
+                    });
+                    html += '</div>';
+                });
+                
+                resultsDiv.innerHTML = html;
+            }
+        }
+
+        const testRunner = new TestRunner();
+    </script>
+
+    <!-- Load test files -->
+    <script src="utils.test.js"></script>
+
+    <script>
+        // Display results after all tests run
+        testRunner.displayResults();
+    </script>
+</body>
+</html>
