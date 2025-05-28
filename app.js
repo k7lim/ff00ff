@@ -8,6 +8,39 @@
 let scoreDisplayEl, questionAreaEl, optionsAreaEl, feedbackAreaEl, hintButtonEl, newGameButtonEl, feedbackTextEl;
 
 /**
+ * Get access to global game state variables
+ * Ensures cross-platform compatibility
+ */
+function getGameState() {
+    if (typeof window !== 'undefined') {
+        return {
+            get currentScore() { return window.currentScore; },
+            set currentScore(value) { window.currentScore = value; },
+            get currentQuestion() { return window.currentQuestion; },
+            set currentQuestion(value) { window.currentQuestion = value; },
+            get hintUsed() { return window.hintUsed; },
+            set hintUsed(value) { window.hintUsed = value; },
+            get guessesMade() { return window.guessesMade; },
+            set guessesMade(value) { window.guessesMade = value; }
+        };
+    } else {
+        return {
+            get currentScore() { return global.currentScore; },
+            set currentScore(value) { global.currentScore = value; },
+            get currentQuestion() { return global.currentQuestion; },
+            set currentQuestion(value) { global.currentQuestion = value; },
+            get hintUsed() { return global.hintUsed; },
+            set hintUsed(value) { global.hintUsed = value; },
+            get guessesMade() { return global.guessesMade; },
+            set guessesMade(value) { global.guessesMade = value; }
+        };
+    }
+}
+
+// Get game state accessor
+const gameState = getGameState();
+
+/**
  * Initialize DOM element references
  * Called when the page loads to set up element references
  */
@@ -43,7 +76,7 @@ function displayScore() {
         throw new Error('Score display element not initialized');
     }
     
-    scoreDisplayEl.textContent = `YOUR SCORE: ${currentScore}`;
+    scoreDisplayEl.textContent = `YOUR SCORE: ${gameState.currentScore}`;
 }
 
 /**
@@ -147,12 +180,58 @@ function renderQuestion(questionObj) {
 }
 
 /**
+ * Starts a new question and sets up the game state
+ * This function will set up and display a new question
+ */
+function startNewQuestion() {
+    // Generate and set new question
+    gameState.currentQuestion = generateQuestion();
+    
+    // Reset question state
+    gameState.hintUsed = false;
+    gameState.guessesMade = 0;
+    
+    // Render the question to the DOM
+    renderQuestion(gameState.currentQuestion);
+    
+    // Update feedback text with instructional text based on question type
+    if (gameState.currentQuestion.type === 'identify_color') {
+        feedbackTextEl.textContent = "GUESS THE COLOR";
+    } else if (gameState.currentQuestion.type === 'identify_swatch') {
+        feedbackTextEl.textContent = "CHOOSE THE HEX CODE";
+    }
+    
+    // Ensure hint button is visible, active, and has correct text
+    hintButtonEl.style.display = 'inline-block';
+    hintButtonEl.disabled = false;
+    hintButtonEl.textContent = "Show Hint";
+    
+    // Ensure new game button is hidden
+    newGameButtonEl.style.display = 'none';
+    
+    console.log("New question:", gameState.currentQuestion);
+}
+
+/**
+ * Initialize the game
+ * Sets up the initial game state and displays the first question
+ */
+function initGame() {
+    // Display the initial score of 0
+    displayScore();
+    
+    // Load and display the first question
+    startNewQuestion();
+}
+
+/**
  * Initialize the application
  * Called when the page loads
  */
 function initApp() {
     try {
         initializeDOMElements();
+        initGame();
         console.log('HexVex initialized');
     } catch (error) {
         console.error('Failed to initialize HexVex:', error.message);

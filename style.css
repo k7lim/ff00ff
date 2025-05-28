@@ -16,19 +16,17 @@ body {
     display: none;
 }
 
-/* Temporary visible borders for development layout visibility */
+/* Layout styling */
 #score-display {
-    border: 2px solid #ff0000;
-    background-color: #ffe6e6;
     padding: 10px;
     position: absolute;
     top: 20px;
     right: 20px;
+    font-weight: bold;
+    font-size: 18px;
 }
 
 #question-area {
-    border: 2px solid #0000ff;
-    background-color: #e6e6ff;
     padding: 20px;
     margin: 80px auto 20px auto;
     text-align: center;
@@ -37,8 +35,6 @@ body {
 }
 
 #options-area {
-    border: 2px solid #00ff00;
-    background-color: #e6ffe6;
     padding: 20px;
     margin: 20px auto;
     text-align: center;
@@ -47,10 +43,15 @@ body {
 }
 
 #feedback-area {
-    border: 2px solid #ff8800;
-    background-color: #fff2e6;
     padding: 20px;
     margin: 20px auto;
     text-align: center;
     width: 400px;
+}
+
+#feedback-text {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
 }
