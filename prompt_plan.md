@@ -17,7 +17,7 @@ Let's start with the foundational elements.
 
 ---
 
-**Prompt 1: Basic HTML and CSS Setup**
+**Prompt 1: Basic HTML and CSS Setup** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
 
 ```text
 We are starting a new project called HexVex, a hex color quiz game.
@@ -48,7 +48,7 @@ We are starting a new project called HexVex, a hex color quiz game.
 
 ---
 
-**Prompt 2: Core Color Utilities**
+**Prompt 2: Core Color Utilities** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
 
 ```text
 Okay, we have the basic HTML and CSS. Now, let's implement the core color utility functions in `utils.js`.
@@ -83,7 +83,7 @@ Let's stick to plain JS without explicit module syntax for now to keep it simple
 
 ---
 
-**Prompt 3: Question Generation Logic - Options and Distinctness**
+**Prompt 3: Question Generation Logic - Options and Distinctness** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
 
 ```text
 With the color utilities in place, let's move to `game.js` and start building the question generation logic. This is a critical part, especially the color distinctness.
@@ -97,30 +97,20 @@ With the color utilities in place, let's move to `game.js` and start building th
 
 2.  **`generateQuestionOptions()` function:**
     *   This function will be responsible for creating a set of one correct color and three distinct distractor colors.
-    *   **Steps:**
-        1.  Generate a `correctHex` using `utils.generateRandomHexColor()`. Convert it to `correctRgb` using `utils.hexToRgb()`.
-        2.  Initialize an empty array `distractorHexes`.
-        3.  **Loop to generate 3 distinct distractors:**
-            a.  Generate a `distractorHex` using `utils.generateRandomHexColor()`.
-            b.  Convert it to `distractorRgb` using `utils.hexToRgb()`.
-            c.  **Similarity Check 1 (Distractor vs. Correct):** Calculate distance between `distractorRgb` and `correctRgb`. If distance is `< MIN_DISTANCE_THRESHOLD`, discard this `distractorHex` and GOTO step 3a to generate a new one.
-            d.  **Similarity Check 2 (Distractor vs. Other Distractors):** For each existing hex in `distractorHexes`, convert it to RGB and calculate distance against the current `distractorRgb`. If *any* distance is `< MIN_DISTANCE_THRESHOLD`, discard the current `distractorHex` and GOTO step 3a.
-            e.  If the `distractorHex` passes both checks, add it to `distractorHexes`.
-            f.  Repeat until `distractorHexes` contains 3 hex codes.
-            *   **Refined Regeneration Logic (as per spec):** The spec states: "If *any* pair is found to be 'too similar,' discard *all three* current distractors and return to step 2 (generate a brand new set of three distractors)."
-                Let's implement *this specific regeneration logic*:
-                Revised Step:
-                1. Generate `correctHex` and `correctRgb`.
-                2. Start a `do...while` loop that continues until a valid set of 3 distractors is found.
-                   a. `distractors = []` (array of hex strings)
-                   b. `distractorRgbs = []`
-                   c. Generate 3 random distractor hex codes and their RGB versions. Store them.
-                   d. `allColorsHex = [correctHex, ...distractors]`
-                   e. `allColorsRgb = [correctRgb, ...distractorRgbs]`
-                   f. `isDistinctSet = true`
-                   g. Iterate through all unique pairs in `allColorsRgb`. If `utils.calculateColorDistance(pairColor1, pairColor2) < MIN_DISTANCE_THRESHOLD` for *any* pair, set `isDistinctSet = false` and `break` this inner loop.
-                   h. The `do...while` loop condition is `!isDistinctSet`.
-                3. If the loop finishes, `distractors` contains 3 hex codes that are distinct from the correct answer and from each other.
+    *   **Refined Regeneration Logic (as per spec):** The spec states: "If *any* pair is found to be 'too similar,' discard *all three* current distractors and return to step 2 (generate a brand new set of three distractors)."
+        Let's implement *this specific regeneration logic*:
+        Revised Step:
+        1. Generate `correctHex` and `correctRgb` using `generateRandomHexColor()` and `hexToRgb()`.
+        2. Start a `do...while` loop that continues until a valid set of 3 distractors is found.
+           a. `distractors = []` (array of hex strings)
+           b. `distractorRgbs = []`
+           c. Generate 3 random distractor hex codes and their RGB versions. Store them.
+           d. `allColorsHex = [correctHex, ...distractors]`
+           e. `allColorsRgb = [correctRgb, ...distractorRgbs]`
+           f. `isDistinctSet = true`
+           g. Iterate through all unique pairs in `allColorsRgb`. If `calculateColorDistance(pairColor1, pairColor2) < MIN_DISTANCE_THRESHOLD` for *any* pair, set `isDistinctSet = false` and `break` this inner loop.
+           h. The `do...while` loop condition is `!isDistinctSet`.
+        3. If the loop finishes, `distractors` contains 3 hex codes that are distinct from the correct answer and from each other.
 
     *   **Return Value:** An object `{ correctHex: "...", distractors: ["...", "...", "..."] }`.
     *   **Logging:** Add `console.log` statements if the distractor regeneration loop runs more than, say, 5-10 times for a single call, to monitor its efficiency. "Distractor regeneration attempts: [count]".
@@ -140,7 +130,7 @@ With the color utilities in place, let's move to `game.js` and start building th
 
 ---
 
-**Prompt 4: Full Question Object Generation**
+**Prompt 4: Full Question Object Generation** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
 
 ```text
 We can now generate a set of distinct color options. Next, let's create the full question object, including randomizing the question type and the order of options.
@@ -191,7 +181,7 @@ We can now generate a set of distinct color options. Next, let's create the full
 
 ---
 
-**Prompt 5: Game State and Basic UI Rendering**
+**Prompt 5: Game State and Basic UI Rendering** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
 
 ```text
 Now that we can generate complete question objects, let's set up basic game state variables and render a question to the DOM.
@@ -204,7 +194,7 @@ Now that we can generate complete question objects, let's set up basic game stat
     *   `let currentScore = 0;`
     *   `let currentQuestion = null;` // Will hold the object from generateQuestion()
     *   `let hintUsed = false;`
-    *   `let guessesMade = 0;` // Number of incorrect guesses for the current question + 1 for the current attempt
+    *   `let guessesMade = 0;` // Number of incorrect guesses for the current question
 
 **`app.js` requirements:**
 
@@ -220,12 +210,10 @@ Now that we can generate complete question objects, let's set up basic game stat
 
 2.  **`displayScore()` function:**
     *   Takes no arguments.
-    *   Updates `scoreDisplayEl.textContent` to `YOUR SCORE: ${game.currentScore}`. (Assume `game` object is accessible if state is in `game.js`, or pass score).
-    *   For now, let's assume `game.js` variables are globally accessible for simplicity, e.g. `currentScore` not `game.currentScore` if not namespaced. To avoid globals, we could wrap `game.js` logic in an object like `HexVexGame`. Let's proceed with simple global-like access for now.
-    *   `scoreDisplayEl.textContent = \`YOUR SCORE: ${currentScore}\`;` (assuming `currentScore` is from `game.js`).
+    *   Updates `scoreDisplayEl.textContent` to `YOUR SCORE: ${currentScore}` (assuming `currentScore` is an accessible variable from `game.js`).
 
 3.  **`renderQuestion(questionObj)` function:**
-    *   Takes a question object (as generated by `game.generateQuestion()`) as input.
+    *   Takes a question object (as generated by `generateQuestion()`) as input.
     *   **Clear previous content:**
         *   `questionAreaEl.innerHTML = '';`
         *   `optionsAreaEl.innerHTML = '';`
@@ -238,42 +226,37 @@ Now that we can generate complete question objects, let's set up basic game stat
         *   If `questionObj.type === 'identify_swatch'`:
             *   Create a `div` or `h1` for the hex code text.
             *   Set its `textContent` to `questionObj.questionDisplayValue`.
-            *   Style it: large font (e.g., `font-size: 3em; font-family: monospace; font-weight: bold; text-align: center; margin: 20px; text-transform: uppercase;`). Add the specified text stroke/shadow: `text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; color: #333;` (use a neutral color like #333 for now, as it might be displayed on white).
+            *   Style it: large font (e.g., `font-size: 3em; font-family: monospace; font-weight: bold; text-align: center; margin: 20px; text-transform: uppercase;`). Add the specified text stroke/shadow: `text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; color: #333;`.
             *   Append it to `questionAreaEl`.
     *   **Render Options:**
         *   Iterate through `questionObj.options`. For each `option`:
             *   If `questionObj.type === 'identify_color'` (options are hex codes):
-                *   Create a `button` or `div` for the hex code.
+                *   Create a `button` or `div`.
                 *   Set `textContent` to `option.value` (uppercase).
-                *   Style it: clickable appearance, padding, margin, monospace font, uppercase, same text stroke/shadow as above.
-                *   Store `option.isCorrect` and `option.value` on the element (e.g., using `dataset` attributes: `element.dataset.isCorrect = option.isCorrect; element.dataset.value = option.value;`).
+                *   Style it: clickable, padding, margin, monospace font, uppercase, same text stroke/shadow.
+                *   Store `option.isCorrect` and `option.value` on the element using `dataset` attributes.
                 *   Append to `optionsAreaEl`.
             *   If `questionObj.type === 'identify_swatch'` (options are color swatches):
                 *   Create a `div` for the color swatch.
                 *   Set `backgroundColor` to `option.value`.
                 *   Style it: clickable, e.g., `width: 100px; height: 100px; border-radius: 50%; border: 2px solid black; margin: 10px; display: inline-block; cursor: pointer;`.
-                *   Store `option.isCorrect` and `option.value` on the element (e.g., `dataset`).
+                *   Store `option.isCorrect` and `option.value` using `dataset`.
                 *   Append to `optionsAreaEl`.
     *   Style `optionsAreaEl` to display options horizontally and centered (`text-align: center;`).
 
 **Testing:**
 *   Manually in `app.js` (e.g., within an `init` function or at the end of the file):
-    1.  Call `game.generateQuestion()` to get a sample question.
-    2.  Store it in `game.currentQuestion`.
-    3.  Call `renderQuestion(game.currentQuestion)`.
+    1.  Call `generateQuestion()` to get a sample question.
+    2.  Store it in `currentQuestion`.
+    3.  Call `renderQuestion(currentQuestion)`.
     4.  Call `displayScore()` (score will be 0).
 *   Open `index.html` in the browser.
-*   Verify:
-    *   Score "0" is displayed.
-    *   A question (either a large swatch or large hex text) is visible.
-    *   Four options (either hex codes or color swatches) are visible below the question, styled as buttons/clickable items.
-    *   The temporary borders on layout divs help see the structure.
-    *   Check element inspector to see `dataset` attributes on options.
+*   Verify: Score "0", a question, and four options are visible. Check element inspector for `dataset` attributes.
 ```
 
 ---
 
-**Prompt 6: Initial Game Loop and First Question on Load**
+**Prompt 6: Initial Game Loop and First Question on Load** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
 
 ```text
 The UI can now render a question. Let's set up the game to load the first question automatically and prepare for handling answers.
@@ -285,16 +268,14 @@ The UI can now render a question. Let's set up the game to load the first questi
 1.  **`startNewQuestion()` function:**
     *   This function will set up and display a new question.
     *   **Steps:**
-        1.  `currentQuestion = generateQuestion();` (assuming `generateQuestion` is from `game.js` and accessible).
+        1.  `currentQuestion = generateQuestion();`
         2.  `hintUsed = false;`
         3.  `guessesMade = 0;`
         4.  Call `renderQuestion(currentQuestion)`.
-        5.  Update `feedbackTextEl.textContent` with instructional text:
-            *   If `currentQuestion.type === 'identify_color'`, set to "Which hex code matches this color?".
-            *   If `currentQuestion.type === 'identify_swatch'`, set to "Which color matches this hex code?".
-        6.  Ensure `hintButtonEl` is visible, active (clickable), and its text is "Show Hint".
-        7.  Ensure `newGameButtonEl` is hidden (`newGameButtonEl.style.display = 'none';`).
-        8.  (Later, we'll add logic here to re-attach event listeners to new options).
+        5.  Update `feedbackTextEl.textContent` with instructional text based on `currentQuestion.type` (e.g., "Which hex code matches this color?").
+        6.  Ensure `hintButtonEl` is visible, active, and text is "Show Hint".
+        7.  Ensure `newGameButtonEl` is hidden.
+        8.  (Later, we'll add logic to attach event listeners).
 
 2.  **`initGame()` function (or directly at the end of `app.js`):**
     *   Call `displayScore()` to show the initial score of 0.
@@ -304,19 +285,12 @@ The UI can now render a question. Let's set up the game to load the first questi
 
 **Testing:**
 *   Refresh `index.html` in the browser.
-*   Verify:
-    *   A random question (either type) loads immediately.
-    *   The score "YOUR SCORE: 0" is displayed.
-    *   Appropriate instructional text is in the feedback area.
-    *   "Show Hint" button is visible and says "Show Hint".
-    *   "NEW GAME" button is hidden.
-    *   The temporary borders on layout divs can now be removed from `style.css` if desired, as content is populating them.
-    *   In `style.css`, ensure `question-area` and `options-area` elements are centered on the page or within their parent. For instance, `margin: 0 auto; text-align: center;` for block elements, or flexbox for parent containers.
+*   Verify: A random question loads immediately, score is "0", correct instructions appear, "Show Hint" is visible, and "NEW GAME" is hidden. The temporary layout borders from Prompt 1 can now be removed from `style.css`.
 ```
 
 ---
 
-**Prompt 7: Handling User Guesses (No Scoring Yet, Basic Feedback)**
+**Prompt 7: Handling User Guesses (No Scoring Yet, Basic Feedback)** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
 
 ```text
 The game starts with a question. Now let's make the options clickable and provide basic feedback.
@@ -326,50 +300,40 @@ The game starts with a question. Now let's make the options clickable and provid
 **`app.js` requirements:**
 
 1.  **Modify `renderQuestion(questionObj)`:**
-    *   When creating each option element (button or div):
-        *   Add an event listener (`'click'`).
-        *   The event listener should call a new function, `handleGuess(event, optionData)`, passing the event and the specific `option` object (or just its `isCorrect` status and `value`).
-        *   It's crucial that these event listeners are added to the *newly created* option elements each time `renderQuestion` is called.
-        *   Example for an option element `el`:
-            ```javascript
-            // Inside the loop creating options in renderQuestion
-            const optionData = questionObj.options[i]; // or however you access it
-            el.addEventListener('click', (event) => handleGuess(event, optionData));
-            ```
+    *   When creating each option element, add a `'click'` event listener.
+    *   The listener should call a new function, `handleGuess(event, optionData)`.
+    *   Example: `el.addEventListener('click', (event) => handleGuess(event, optionData));`
 
 2.  **`handleGuess(event, chosenOptionData)` function:**
-    *   `event`: The click event object.
-    *   `chosenOptionData`: The data object `{ value: hexString, isCorrect: boolean, id: uniqueId }` for the clicked option.
-    *   **Steps:**
-        1.  Increment `guessesMade` (from `game.js`).
-        2.  Let `clickedElement = event.currentTarget;`.
-        3.  If `chosenOptionData.isCorrect`:
-            *   `feedbackTextEl.textContent = "CORRECT! (Score/Next feature pending)";`
-            *   Make all option elements unclickable or visually distinct (e.g., lower opacity for incorrect ones). For now, just disable the `hintButtonEl`.
-            *   Show `newGameButtonEl` (`newGameButtonEl.style.display = 'inline-block';`).
-            *   Disable further clicks on options for this question (perhaps by clearing `optionsAreaEl.innerHTML` or disabling buttons). A simple way is to set a flag like `questionAnswered = true` and check it in `handleGuess`.
-        4.  Else (incorrect guess):
-            *   `feedbackTextEl.textContent = \`TRY AGAIN. You picked ${chosenOptionData.value}. (Removal pending)\`;`
-            *   Make `clickedElement` unclickable and visually indicate it was wrong (e.g., `clickedElement.style.opacity = '0.5'; clickedElement.style.pointerEvents = 'none';` or remove it: `clickedElement.remove();`).
-            *   If `guessesMade === 3` (and this guess was incorrect):
-                *   `feedbackTextEl.textContent = "ALL WRONG! The correct answer was [CorrectAnswerValue]. (Score/Next feature pending)";`
-                *   Show `newGameButtonEl`.
-                *   Disable `hintButtonEl`.
-                *   Indicate the correct answer visually if possible (e.g. find the element with `isCorrect=true` and highlight it).
+    *   `chosenOptionData` is the `{ value, isCorrect }` object for the clicked option.
+    *   Define a state variable `questionOver = false;` in the main scope, reset to `false` in `startNewQuestion`, and set to `true` when the question is answered. Return from `handleGuess` if `questionOver` is true.
+    *   Increment `guessesMade`.
+    *   Let `clickedElement = event.currentTarget;`.
+    *   If `chosenOptionData.isCorrect`:
+        *   Set `feedbackTextEl.textContent = "CORRECT! (Score/Next feature pending)";`
+        *   Show `newGameButtonEl`.
+        *   Disable the `hintButtonEl`.
+        *   Set `questionOver = true`.
+    *   Else (incorrect guess):
+        *   Set `feedbackTextEl.textContent = \`TRY AGAIN. You picked ${chosenOptionData.value}. (Removal pending)\`;`
+        *   Remove the `clickedElement` (`clickedElement.remove();`).
+        *   If `guessesMade === 3`:
+            *   Set `feedbackTextEl.textContent = "ALL WRONG! The correct answer was [CorrectAnswerValue]. (Score/Next feature pending)";`
+            *   Show `newGameButtonEl`.
+            *   Set `questionOver = true`.
 
 **Testing:**
 *   Refresh `index.html`.
 *   Click on an option:
-    *   If correct: See "CORRECT!" message, "NEW GAME" button appears, hint button might get disabled (or similar).
-    *   If incorrect: See "TRY AGAIN..." message, the clicked option becomes disabled/removed.
-    *   After 3 incorrect guesses: See "ALL WRONG!" message, "NEW GAME" button appears.
-*   The game flow isn't complete yet, but basic interaction should work.
-*   Ensure options from previous questions are not interactive after a new question is loaded (clearing `optionsAreaEl.innerHTML` in `renderQuestion` should handle this).
+    *   If correct: See "CORRECT!" message, "NEW GAME" appears.
+    *   If incorrect: See "TRY AGAIN..." message, the clicked option is removed.
+    *   After 3 incorrect guesses: See "ALL WRONG!" message, "NEW GAME" appears.
+*   Ensure options are not clickable after the question is over.
 ```
 
 ---
 
-**Prompt 8: Scoring System Implementation**
+**Prompt 8: Scoring System Implementation** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
 
 ```text
 We have basic guess handling. Now, let's implement the full scoring logic and update the score display.
@@ -379,77 +343,47 @@ We have basic guess handling. Now, let's implement the full scoring logic and up
 **`game.js` requirements:**
 
 1.  **`calculateScore(guessesMadeCount, hintWasUsed)` function:**
-    *   `guessesMadeCount`: The number of guesses it took to get the answer right (e.g., 1 for 1st try, 2 for 2nd try, etc.).
+    *   `guessesMadeCount`: The number of guesses it took (1 for 1st try, 2 for 2nd try, etc.).
     *   `hintWasUsed`: Boolean.
     *   **Logic:**
         *   `let points = 0;`
-        *   If `guessesMadeCount === 1`, `points = 8`.
-        *   Else if `guessesMadeCount === 2`, `points = 4`.
-        *   Else if `guessesMadeCount === 3`, `points = 2`.
-        *   Else (`guessesMadeCount === 4` or more, or 3rd incorrect guess leading to 0 points), `points = 0`. (Note: Spec says "4th guess (only one option left after 3 incorrect): 0 points". And "On Third Incorrect Guess (0 points awarded for the question)".) This means if the 3rd guess is *incorrect*, the question score is 0. If the 3rd guess is *correct*, it's 2 points.
-    *   If `hintWasUsed` is `true`, `points = Math.floor(points / 2);`.
-    *   Return `points`.
-    *   **Test this function with various inputs:**
-        *   `calculateScore(1, false)` -> 8
-        *   `calculateScore(1, true)` -> 4
-        *   `calculateScore(3, false)` -> 2
-        *   `calculateScore(3, true)` -> 1
-        *   `calculateScore(4, false)` -> 0
-        *   `calculateScore(0, false)` -> 0 (edge case, should result in 0)
+        *   Based on `guessesMadeCount`, assign 8, 4, or 2 points. `guessesMadeCount >= 4` is 0 points.
+        *   If `hintWasUsed`, `points = Math.floor(points / 2);`.
+        *   Return `points`.
+    *   **Test this function with various inputs:** `calculateScore(1, false)` -> 8, `calculateScore(1, true)` -> 4, `calculateScore(3, true)` -> 1, `calculateScore(4, false)` -> 0.
 
 **`app.js` requirements:**
 
 1.  **Modify `handleGuess(event, chosenOptionData)`:**
     *   When `chosenOptionData.isCorrect`:
-        1.  `let pointsAwarded = calculateScore(guessesMade, hintUsed);` (Pass current `guessesMade` and `hintUsed` from `game.js` state).
-        2.  `currentScore += pointsAwarded;`
-        3.  Call `displayScore()`.
-        4.  `feedbackTextEl.textContent = \`CORRECT! +${pointsAwarded}\`;`
-        5.  Remove all other options from `optionsAreaEl`. Keep the chosen correct one, or simply clear and show correct answer below question area. Per spec: "All other options are removed." and "The correct answer element displayed clearly below it." - this means the main question and the chosen option. Let's simplify for now: clear options, show feedback.
-        6.  The `questionAreaEl` should still show the main question (e.g. large swatch). Below it, you can add the text/swatch of the correct answer if it's not already the main display.
-           Example: if type was "identify_color", question area has swatch. Now add the correct hex code string below it.
-           If type was "identify_swatch", question area has hex. Now add the correct color swatch below it.
-           *   To implement "correct answer element displayed clearly below it": After `feedbackTextEl.textContent = ...`, you could append a new element to `feedbackAreaEl` or `questionAreaEl` that shows the correct answer. E.g., if it was an "identify_color" question, show the `currentQuestion.correctAnswerHex`. If "identify_swatch", show a small swatch of `currentQuestion.correctAnswerHex`.
-        7.  Show `newGameButtonEl`.
-        8.  Disable `hintButtonEl`.
-        9.  Set a flag `questionOver = true;` at the start of `handleGuess`, if `questionOver` is true, return early. Set `questionOver = true` on correct guess or 3rd incorrect. Reset in `startNewQuestion`.
-
+        1.  The number of guesses for scoring is `guessesMade`.
+        2.  `let pointsAwarded = calculateScore(guessesMade, hintUsed);`
+        3.  `currentScore += pointsAwarded;`
+        4.  Call `displayScore()`.
+        5.  `feedbackTextEl.textContent = \`CORRECT! +${pointsAwarded}\`;`
+        6.  Remove all other options from `optionsAreaEl`.
+        7.  Show the correct answer element below the question as per spec.
     *   When `chosenOptionData.isCorrect` is `false`:
-        1.  The clicked element (`event.currentTarget`) should be removed from display (`event.currentTarget.remove();`).
-        2.  If `guessesMade === 3` (this was the 3rd incorrect guess):
-            *   `feedbackTextEl.textContent = \`INCORRECT. The correct answer was ${currentQuestion.correctAnswerHex}. +0\`;` // Or show swatch if appropriate
-            *   If `currentQuestion.type === 'identify_swatch'`, the text should be like: "INCORRECT. The correct answer was [swatch of correctAnswerHex]. +0".
-            *   If `currentQuestion.type === 'identify_color'`, the text should be like: "INCORRECT. The correct answer was ${currentQuestion.correctAnswerHex}. +0".
-            *   Display the actual correct answer visually (e.g., append the correct hex or a swatch to `feedbackAreaEl`).
-            *   `currentScore += 0;` // Explicitly, though it doesn't change
-            *   `displayScore();`
-            *   Show `newGameButtonEl`.
-            *   Disable `hintButtonEl`.
-            *   Set `questionOver = true;`.
-        3.  Else (1st or 2nd incorrect guess):
-            *   To show specific feedback:
-                *   If `currentQuestion.type === 'identify_color'` (user picked wrong hex): `feedbackTextEl.textContent = \`TRY AGAIN. THAT HEX CODE WAS...\`;` (We need to show the color of the hex they picked). Create a small inline swatch for `chosenOptionData.value`.
-                *   If `currentQuestion.type === 'identify_swatch'` (user picked wrong swatch): `feedbackTextEl.textContent = \`TRY AGAIN. THAT COLOR WAS ${chosenOptionData.value}\`;` (Color the hex code text with its actual color `chosenOptionData.value`).
-            *   Example for feedback text: `feedbackTextEl.innerHTML = \`TRY AGAIN. THAT COLOR WAS <span style="color:${chosenOptionData.value}; font-weight:bold;">${chosenOptionData.value}</span>\`;`
+        1.  If `guessesMade === 3`:
+            *   `feedbackTextEl.textContent = \`INCORRECT. The correct answer was ${currentQuestion.correctAnswerHex}. +0\`;`
+            *   Display the correct answer visually.
+            *   Update score (with +0) and call `displayScore()`.
+        2.  Else (1st or 2nd incorrect guess):
+            *   Update `feedbackTextEl` with the specific "TRY AGAIN..." message from the spec, showing the color/hex of the incorrect choice.
 
 2.  **"NEW GAME" Button Functionality:**
-    *   Add an event listener to `newGameButtonEl`.
-    *   When clicked, it should call `startNewQuestion()`.
-    *   `startNewQuestion()` should also reset `questionOver = false;`.
+    *   Add an event listener to `newGameButtonEl` to call `startNewQuestion()`.
 
 **Testing:**
-*   Test all scoring scenarios:
-    *   Correct on 1st, 2nd, 3rd try (without hint). Verify points and total score.
-    *   3 incorrect guesses. Verify 0 points for question, total score unchanged, correct feedback.
-*   Verify "NEW GAME" button works and loads a new question, resetting the state for the new question.
-*   Verify feedback messages are accurate and display as specified, including showing the color/hex of the incorrect choice.
-*   Verify incorrect options are removed.
-*   Verify the display of the correct answer after a correct guess or after 3 incorrect guesses.
+*   Test all scoring scenarios: 1st/2nd/3rd correct guess, 3 incorrect guesses.
+*   Verify "NEW GAME" works.
+*   Verify feedback messages are specific and accurate.
+*   Verify removal of incorrect options and display of the final correct answer.
 ```
 
 ---
 
-**Prompt 9: Hint System Implementation**
+**Prompt 9: Hint System Implementation** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
 
 ```text
 The scoring is in. Now, let's implement the hint system. This involves UI changes for the button, visual changes for hex codes, and score adjustment.
@@ -459,63 +393,34 @@ The scoring is in. Now, let's implement the hint system. This involves UI change
 **`app.js` requirements:**
 
 1.  **`renderHexWithHint(hexString)` function:**
-    *   This utility function will be used to display a hex code with its RGB components colored.
     *   Input: `hexString` (e.g., "#AABBCC").
-    *   Output: An HTML string.
-    *   Example: For `#AABBCC`, it should return something like:
-        `<span style="font-family: monospace; font-weight: bold;">#</span>` + // Keep # and styling consistent
-        `<span style="color:#AA0000; text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;">AA</span>` + // White shadow for dark colors, or adapt
-        `<span style="color:#00BB00; text-shadow: ...;">BB</span>` +
-        `<span style="color:#0000CC; text-shadow: ...;">CC</span>`
-    *   The text shadow here should be light (e.g., white or light gray) if the colored text itself is dark, to ensure readability, or maintain the black stroke if that works better. The spec says "standard black stroke/shadow must still be applied". A simple black `text-shadow: 0 0 1px black;` might be enough over the colored text.
-    *   The function should handle hex codes with or without '#'. If '#' is present, it should be part of the output but not colored.
-    *   Test this function with a few hex codes to ensure correct HTML output.
+    *   Output: An HTML string that colors the R, G, and B components of the hex.
+    *   Example for `#AABBCC`: returns `<span>#</span><span style="color:#AA0000;">AA</span><span style="color:#00BB00;">BB</span><span style="color:#0000CC;">CC</span>`.
+    *   Ensure the standard black text-stroke/shadow from the spec is still applied to these colored spans (e.g., via a class).
 
-2.  **Event Listener for `hintButtonEl`:**
-    *   Add a `'click'` event listener to `hintButtonEl`. This should call a new function, `handleHintClick()`.
+2.  **`handleHintClick()` function:**
+    *   Add an event listener on `hintButtonEl` to call this.
+    *   If `hintUsed` or `questionOver` is true, return.
+    *   Set `hintUsed = true;`.
+    *   Update `hintButtonEl` text to "Hint Shown" and disable it.
+    *   **Apply Visual Hint:**
+        *   If `currentQuestion.type === 'identify_color'`, iterate through option elements and update their `innerHTML` using `renderHexWithHint`.
+        *   If `currentQuestion.type === 'identify_swatch'`, update the `innerHTML` of the main question element using `renderHexWithHint`.
 
-3.  **`handleHintClick()` function:**
-    *   **Steps:**
-        1.  If `hintUsed` is already `true` or `questionOver` is true, return (do nothing).
-        2.  Set `hintUsed = true;` (the global game state variable from `game.js`).
-        3.  Update `hintButtonEl`:
-            *   `hintButtonEl.textContent = "Hint Shown";`
-            *   Disable it (e.g., `hintButtonEl.disabled = true;`).
-        4.  **Apply Visual Hint:**
-            *   If `currentQuestion.type === 'identify_color'` (options are hex codes):
-                *   Iterate through the currently displayed option elements in `optionsAreaEl`.
-                *   For each option element displaying a hex code, get its hex value (from `dataset.value`).
-                *   Replace its `innerHTML` with the output of `renderHexWithHint(hexValue)`.
-            *   If `currentQuestion.type === 'identify_swatch'` (question is a large hex code):
-                *   Get the hex value from `currentQuestion.questionDisplayValue`.
-                *   Update the `innerHTML` of the element in `questionAreaEl` (that displays the large hex) with `renderHexWithHint(hexValue)`. Remember to preserve other stylings like font size.
-
-4.  **Modify `startNewQuestion()`:**
-    *   Ensure `hintUsed` is reset to `false`.
-    *   Reset `hintButtonEl`:
-        *   `hintButtonEl.textContent = "Show Hint";`
-        *   `hintButtonEl.disabled = false;`
-
-5.  **Modify `calculateScore` (in `game.js`):**
-    *   This function already takes `hintWasUsed`. Ensure it's correctly halving the score. No changes needed if it already does.
+3.  **Modify `startNewQuestion()`:**
+    *   Reset `hintUsed` to `false`.
+    *   Reset `hintButtonEl` to "Show Hint" and enable it.
 
 **Testing:**
-*   Start a new game.
-*   Click "Show Hint":
-    *   Button text changes to "Hint Shown" and becomes inactive.
-    *   Visual hint (colored hex characters) appears correctly:
-        *   On the 4 hex options if it's an "Identify Color" question.
-        *   On the large hex display if it's an "Identify Correct Swatch" question.
-    *   The black stroke/shadow on hex characters should still be visible.
-*   Answer the question correctly after using the hint. Verify the score awarded is halved.
-    *   E.g., 1st guess correct with hint: 4 points.
-*   Start a "NEW GAME". Verify the hint button is reset ("Show Hint", active) and `hintUsed` is false for the new question.
-*   Verify that using the hint then getting the answer wrong, then getting it right, still applies the halved score for that attempt.
+*   Click "Show Hint": button state changes, visual hint appears correctly for both question types.
+*   Answer correctly after using hint. Verify score is halved.
+*   Start a new game. Verify hint button and state are reset.
+*   Verify hint persists for the duration of one question, even after incorrect guesses.
 ```
 
 ---
 
-**Prompt 10: UI Styling and Polish**
+**Prompt 10: UI Styling and Polish** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
 
 ```text
 The core mechanics and hint system are working. Let's apply the final styling to match the spec's visual requirements.
@@ -524,61 +429,28 @@ The core mechanics and hint system are working. Let's apply the final styling to
 
 **`style.css` requirements:**
 
-1.  **General Layout:**
-    *   Ensure `question-area`, `options-area`, `feedback-area` are reasonably centered on the page.
-    *   `score-display`: Position in the top-right corner. (e.g., `position: absolute; top: 10px; right: 10px; font-size: 1.2em;`).
-    *   Provide some spacing between these main areas.
-
-2.  **Font for Hex Codes:**
-    *   Use a prominent, readable monospace font. Example: `font-family: 'SF Mono', 'Consolas', 'Liberation Mono', Menlo, Courier, monospace;`. Apply this to elements displaying hex codes.
-    *   Ensure hex codes are always uppercase (can be enforced via JS when setting textContent, or `text-transform: uppercase;` in CSS).
-
-3.  **Hex Code Text Styling (Global):**
-    *   Apply a thin black stroke or subtle text-shadow for readability, as specified. This should apply to hex codes in the question area and options area, including when the hint is active.
-    *   Example: `text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;` (for a stroke effect) or a softer `text-shadow: 1px 1px 2px rgba(0,0,0,0.7);`. The spec preferred a stroke.
-    *   When hint is active, `renderHexWithHint` needs to ensure these styles are compatible or reapplied. If `renderHexWithHint` creates spans, these spans should inherit or have this style.
-
+1.  **Layout:** Center the main components. Position `score-display` top-right using `position: absolute;`.
+2.  **Fonts & Text:** Use a prominent monospace font for all hex codes. Ensure `text-transform: uppercase;`.
+3.  **Hex Code Style:** Apply a class `hex-code-text` to all elements showing hex codes. Style this class with the black text-stroke: `text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;`.
 4.  **Color Swatches:**
-    *   **Shape:** Large circles. `border-radius: 50%;`.
-    *   **Appearance:** Consistent black stroke/shadow. `border: 2px solid #000;` (or `box-shadow: 0 0 5px rgba(0,0,0,0.5);`).
-    *   **Size:**
-        *   Large swatch in `question-area` (e.g., `width: 150px; height: 150px;` or larger, `min-width/height` if dynamic).
-        *   Option swatches in `options-area` (e.g., `width: 80px; height: 80px; margin: 10px;`).
-    *   Make sure swatches are `display: inline-block` or use flexbox for layout in `options-area`.
-    *   Add `cursor: pointer;` to option swatches.
-
-5.  **Option Elements (General):**
-    *   Ensure clickable options (both hex texts and swatches) have a clear clickable affordance (e.g., `cursor: pointer;`, slight hover effect).
-    *   Hex code options (buttons/divs) should have padding and look like distinct choices.
-
-6.  **Buttons (`hint-button`, `new-game-button`):**
-    *   Style them to be clear and easily clickable. Padding, border, background color.
-    *   Disabled state for `hint-button` should be visually distinct (e.g., greyed out).
-
-7.  **Feedback Area:**
-    *   Style `feedbackTextEl` for clear readability.
+    *   Apply a class `color-swatch`. Style it with `border-radius: 50%;`, `border: 2px solid #000;`, and `cursor: pointer;`.
+    *   Define sizes for the main question swatch and the smaller option swatches.
+5.  **Buttons:** Style `hint-button` and `new-game-button` for clarity. Style the `:disabled` state of the hint button.
+6.  **Options Area:** Use `display: flex; justify-content: center; align-items: center;` for clean horizontal layout of options.
 
 **`app.js` potentially impacted:**
-*   In `renderQuestion`, ensure styles applied via JS align with CSS or are primarily handled by CSS classes.
-*   The `renderHexWithHint` function needs to be mindful of these global styles, particularly the text stroke/shadow, ensuring it's applied to the colored segments correctly. It might be easier to apply a class to hex display elements and style that class in CSS.
+*   When creating elements in JS, assign the appropriate CSS classes (e.g., `hex-code-text`, `color-swatch`) instead of applying many inline styles.
 
 **Testing:**
-*   Visually inspect the application on a desktop browser.
-*   Confirm:
-    *   White background.
-    *   Score is top-right.
-    *   Question, options, feedback areas are laid out clearly.
-    *   Hex codes are uppercase, monospace, with stroke/shadow, and large.
-    *   Color swatches are large circles with stroke/shadow.
-    *   Options are clearly clickable.
-    *   Hint visual effect (colored hex characters) maintains readability and stroke/shadow.
-    *   Overall minimalist design, colors "pop".
-    *   Buttons are styled and `hint-button` disabled state is clear.
+*   Visually inspect the application.
+*   Confirm layout, fonts, colors, shapes, and effects match the spec.
+*   Ensure the hint's colored text still has the black stroke effect.
+*   Confirm overall design feels minimalist and polished.
 ```
 
 ---
 
-**Prompt 11: Finalizing Feedback Details & Logging**
+**Prompt 11: Finalizing Feedback Details & Logging** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
 
 ```text
 We're almost there! Let's ensure all feedback messages are exactly as specified and add some basic logging for debugging.
@@ -587,52 +459,25 @@ We're almost there! Let's ensure all feedback messages are exactly as specified 
 
 **`app.js` requirements:**
 
-1.  **Review and Refine `handleGuess(event, chosenOptionData)` for feedback messages:**
+1.  **Review and Refine `handleGuess` for feedback messages:**
     *   **On Incorrect Guess:**
-        *   When `currentQuestion.type === 'identify_color'` (user picked wrong hex):
-            *   The feedback must be: "TRY AGAIN. THAT HEX CODE WAS [actual color swatch of the hex they picked]".
-            *   This means `feedbackTextEl.innerHTML` should be something like:
-              `"TRY AGAIN. THAT HEX CODE WAS " + chosenOptionData.value + " <div style='display:inline-block; width:20px; height:20px; background-color:${chosenOptionData.value}; border:1px solid black; vertical-align:middle;'></div>"`.
-        *   When `currentQuestion.type === 'identify_swatch'` (user picked wrong swatch):
-            *   The feedback must be: "TRY AGAIN. THAT COLOR WAS #[hex code of the swatch they picked]" (hex code text colored with its actual color).
-            *   `feedbackTextEl.innerHTML` should be:
-              `"TRY AGAIN. THAT COLOR WAS <span style='color:${chosenOptionData.value}; font-weight:bold; text-shadow: 1px 1px 1px #000;'>${chosenOptionData.value.toUpperCase()}</span>"`. (Ensure consistent shadow/stroke).
-    *   **On Correct Guess:**
-        *   Feedback: "CORRECT! +[ScoreAwardedForThisQuestion]". (Already done, just verify points are correct).
-        *   Ensure the main question element (large hex/swatch) and the correct answer element are displayed clearly below it, as per spec section 7.
-            *   Modify the section after correct guess: Clear `optionsAreaEl`. `feedbackTextEl.textContent = ...`.
-            *   Then, append to `feedbackAreaEl` (or a dedicated `correct-answer-display` div) the correct item.
-                *   If `currentQuestion.type === 'identify_color'`, append the `currentQuestion.correctAnswerHex` text.
-                *   If `currentQuestion.type === 'identify_swatch'`, append a color swatch for `currentQuestion.correctAnswerHex`.
-    *   **On Third Incorrect Guess (0 points):**
-        *   Feedback: "INCORRECT. The correct answer was [show the correct hex code/swatch, appropriately formatted/colored]. +0".
-        *   Ensure the correct answer (hex or swatch) is displayed clearly as part of this message.
-        *   `feedbackTextEl.innerHTML = \`INCORRECT. The correct answer was ${ displayCorrectAnswerRepresentation(currentQuestion.correctAnswerHex, currentQuestion.type === 'identify_swatch' ? 'hex' : 'swatch') }. +0\`;`
-            *   You'll need a helper `displayCorrectAnswerRepresentation(hex, displayAs)` which returns an HTML string for the hex or swatch.
-        *   Crucially, *do not* display "CORRECT!" for the last remaining item if it was reached by elimination due to 3 incorrect prior guesses. (The current logic should handle this, as it branches on `isCorrect` first).
+        *   For `identify_color`: "TRY AGAIN. THAT HEX CODE WAS [actual color swatch of the hex they picked]". Implement this using `innerHTML` to create a small inline swatch.
+        *   For `identify_swatch`: "TRY AGAIN. THAT COLOR WAS #[hex code of the swatch they picked]". Implement with `innerHTML` to color the hex code text.
+    *   **On Correct Guess:** Ensure feedback is "CORRECT! +[Score]".
+    *   **On Third Incorrect Guess:** Ensure feedback is "INCORRECT. The correct answer was [correct answer]. +0".
+    *   Ensure the correct answer (hex or swatch) is displayed clearly after the question is resolved (either correctly or by 3 incorrect guesses).
 
 2.  **Initial Instructional Text (in `startNewQuestion()`):**
-    *   If `currentQuestion.type === 'identify_color'`, set to "GUESS THE COLOR".
-    *   If `currentQuestion.type === 'identify_swatch'`, set to "CHOOSE THE HEX CODE".
-    *   (Spec has slight variation from my prompt 6 - update to match spec exactly).
+    *   Update to match spec exactly: "GUESS THE COLOR" or "CHOOSE THE HEX CODE".
 
 **`game.js` & `app.js` - Logging:**
-1.  In `game.js`, within `generateQuestionOptions()`:
-    *   If the distractor regeneration loop (the `do...while` loop) iterates more than, say, 10 times, log a warning: `console.warn(\`High distractor regeneration attempts: ${count}\`);`.
-2.  In `app.js`, within `startNewQuestion()`:
-    *   Log the newly generated question object for debugging: `console.log("New question:", currentQuestion);`.
-3.  Add `console.log("HexVex initialized");` at the end of `initGame()`.
-4.  Consider logging any unexpected conditions or errors that might arise, though the current logic is fairly straightforward. For example, if `currentQuestion` is somehow null when `handleGuess` is called (should not happen).
+1.  In `game.js`, `generateQuestionOptions()`: `console.warn()` if the regeneration loop runs many times.
+2.  In `app.js`, `startNewQuestion()`: `console.log("New question:", currentQuestion);`.
+3.  In `app.js`, `initGame()`: `console.log("HexVex initialized");`.
 
 **Testing:**
-*   Thoroughly test all feedback scenarios:
-    *   Incorrect guess for "Identify Color" - check swatch in feedback.
-    *   Incorrect guess for "Identify Correct Swatch" - check colored hex in feedback.
-    *   Correct guess - check points and display of correct answer.
-    *   Third incorrect guess - check "INCORRECT...", display of correct answer, and "+0".
+*   Thoroughly test all feedback scenarios to ensure the text and visual aids (inline swatches/colored text) are exactly as specified.
 *   Verify initial instructional texts are correct.
-*   Check browser console for logs: initialization, new questions, and any warnings from distractor generation.
-*   Play several rounds to anecdotally verify color distinctness feels good.
+*   Check the browser console for logs during gameplay.
+*   Play several rounds to confirm the final product is stable and matches the spec.
 ```
-
-This set of prompts should guide the LLM through building HexVex incrementally, with testing and refinement at each stage. Good luck to the LLM!
