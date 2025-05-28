@@ -40,6 +40,9 @@ function getGameState() {
 // Get game state accessor
 const gameState = getGameState();
 
+// Additional game state for question handling
+let questionOver = false;
+
 /**
  * Initialize DOM element references
  * Called when the page loads to set up element references
@@ -65,6 +68,12 @@ function initializeDOMElements() {
     if (!scoreDisplayEl || !questionAreaEl || !optionsAreaEl || !feedbackAreaEl || !hintButtonEl || !newGameButtonEl) {
         throw new Error('Required DOM elements not found. Please check that index.html has all required elements.');
     }
+    
+    // Add event listener to new game button
+    newGameButtonEl.addEventListener('click', () => {
+        console.log('New game button clicked');
+        startNewQuestion();
+    });
 }
 
 /**
@@ -154,6 +163,9 @@ function renderQuestion(questionObj) {
             optionButton.dataset.isCorrect = option.isCorrect.toString();
             optionButton.dataset.value = option.value;
             
+            // Add click event listener
+            optionButton.addEventListener('click', (event) => handleGuess(event, option));
+            
             optionsAreaEl.appendChild(optionButton);
         } else if (questionObj.type === 'identify_swatch') {
             // Create color swatch options
@@ -171,12 +183,70 @@ function renderQuestion(questionObj) {
             optionSwatch.dataset.isCorrect = option.isCorrect.toString();
             optionSwatch.dataset.value = option.value;
             
+            // Add click event listener
+            optionSwatch.addEventListener('click', (event) => handleGuess(event, option));
+            
             optionsAreaEl.appendChild(optionSwatch);
         }
     });
     
     // Ensure options area is centered
     optionsAreaEl.style.textAlign = 'center';
+}
+
+/**
+ * Handles user guess when an option is clicked
+ * @param {Event} event - The click event
+ * @param {object} chosenOptionData - The option data {value, isCorrect, id}
+ */
+function handleGuess(event, chosenOptionData) {
+    // Return early if question is already over
+    if (questionOver) {
+        return;
+    }
+    
+    // Increment guess count
+    gameState.guessesMade++;
+    
+    // Get the clicked element
+    const clickedElement = event.currentTarget;
+    
+    // Handle correct guess
+    if (chosenOptionData.isCorrect) {
+        feedbackTextEl.textContent = "CORRECT! (Score/Next feature pending)";
+        
+        // Show new game button
+        newGameButtonEl.style.display = 'inline-block';
+        
+        // Disable hint button
+        hintButtonEl.disabled = true;
+        
+        // Mark question as over
+        questionOver = true;
+        
+        console.log('Correct answer chosen!');
+    } else {
+        // Handle incorrect guess
+        feedbackTextEl.textContent = `TRY AGAIN. You picked ${chosenOptionData.value}. (Removal pending)`;
+        
+        // Remove the clicked element
+        clickedElement.remove();
+        
+        console.log(`Incorrect guess: ${chosenOptionData.value}. Guesses made: ${gameState.guessesMade}`);
+        
+        // Check if this was the 3rd incorrect guess
+        if (gameState.guessesMade === 3) {
+            feedbackTextEl.textContent = `ALL WRONG! The correct answer was ${gameState.currentQuestion.correctAnswerHex}. (Score/Next feature pending)`;
+            
+            // Show new game button
+            newGameButtonEl.style.display = 'inline-block';
+            
+            // Mark question as over
+            questionOver = true;
+            
+            console.log('All guesses exhausted!');
+        }
+    }
 }
 
 /**
@@ -190,6 +260,7 @@ function startNewQuestion() {
     // Reset question state
     gameState.hintUsed = false;
     gameState.guessesMade = 0;
+    questionOver = false;
     
     // Render the question to the DOM
     renderQuestion(gameState.currentQuestion);
