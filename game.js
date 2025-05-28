@@ -168,3 +168,56 @@ function generateQuestion() {
         correctAnswerHex: correctHex
     };
 }
+
+/**
+ * Calculates the score for a correct answer based on number of guesses and hint usage
+ * @param {number} guessesMadeCount - The number of guesses it took (1 for 1st try, 2 for 2nd try, etc.)
+ * @param {boolean} hintWasUsed - Whether the hint was used for this question
+ * @returns {number} The points awarded for the correct answer
+ */
+function calculateScore(guessesMadeCount, hintWasUsed) {
+    // Input validation
+    if (typeof guessesMadeCount !== 'number') {
+        // Try to convert to number if possible
+        const parsed = Number(guessesMadeCount);
+        if (isNaN(parsed)) {
+            console.warn('Invalid guessesMadeCount, defaulting to 4 (0 points)');
+            guessesMadeCount = 4;
+        } else {
+            guessesMadeCount = parsed;
+        }
+    }
+    
+    if (typeof hintWasUsed !== 'boolean') {
+        // Convert truthy/falsy to boolean
+        hintWasUsed = Boolean(hintWasUsed);
+    }
+    
+    // Ensure guessesMadeCount is a positive integer
+    guessesMadeCount = Math.max(1, Math.floor(Math.abs(guessesMadeCount)));
+    
+    let points = 0;
+    
+    // Assign points based on number of guesses
+    switch (guessesMadeCount) {
+        case 1:
+            points = 8;
+            break;
+        case 2:
+            points = 4;
+            break;
+        case 3:
+            points = 2;
+            break;
+        default: // 4 or more guesses
+            points = 0;
+            break;
+    }
+    
+    // If hint was used, halve the points (rounded down)
+    if (hintWasUsed) {
+        points = Math.floor(points / 2);
+    }
+    
+    return points;
+}

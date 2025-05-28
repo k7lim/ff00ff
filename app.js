@@ -213,7 +213,25 @@ function handleGuess(event, chosenOptionData) {
     
     // Handle correct guess
     if (chosenOptionData.isCorrect) {
-        feedbackTextEl.textContent = "CORRECT! (Score/Next feature pending)";
+        // Calculate points awarded for this question
+        const pointsAwarded = calculateScore(gameState.guessesMade, gameState.hintUsed);
+        
+        // Update the total score
+        gameState.currentScore += pointsAwarded;
+        
+        // Update the score display
+        displayScore();
+        
+        // Show feedback with points earned
+        feedbackTextEl.textContent = `CORRECT! +${pointsAwarded}`;
+        
+        // Remove all other incorrect options to show final state
+        const allOptions = Array.from(optionsAreaEl.children);
+        allOptions.forEach(option => {
+            if (option !== clickedElement && option.dataset.isCorrect === 'false') {
+                option.remove();
+            }
+        });
         
         // Show new game button
         newGameButtonEl.style.display = 'inline-block';
@@ -224,19 +242,15 @@ function handleGuess(event, chosenOptionData) {
         // Mark question as over
         questionOver = true;
         
-        console.log('Correct answer chosen!');
+        console.log(`Correct answer chosen! Points awarded: ${pointsAwarded}, Total score: ${gameState.currentScore}`);
     } else {
         // Handle incorrect guess
-        feedbackTextEl.textContent = `TRY AGAIN. You picked ${chosenOptionData.value}. (Removal pending)`;
-        
-        // Remove the clicked element
-        clickedElement.remove();
-        
-        console.log(`Incorrect guess: ${chosenOptionData.value}. Guesses made: ${gameState.guessesMade}`);
-        
-        // Check if this was the 3rd incorrect guess
         if (gameState.guessesMade === 3) {
-            feedbackTextEl.textContent = `ALL WRONG! The correct answer was ${gameState.currentQuestion.correctAnswerHex}. (Score/Next feature pending)`;
+            // This was the 3rd incorrect guess - question over
+            feedbackTextEl.textContent = `INCORRECT. The correct answer was ${gameState.currentQuestion.correctAnswerHex}. +0`;
+            
+            // Update score (with +0) and display
+            displayScore();
             
             // Show new game button
             newGameButtonEl.style.display = 'inline-block';
@@ -244,7 +258,15 @@ function handleGuess(event, chosenOptionData) {
             // Mark question as over
             questionOver = true;
             
-            console.log('All guesses exhausted!');
+            console.log('All guesses exhausted! No points awarded.');
+        } else {
+            // 1st or 2nd incorrect guess - show try again message
+            feedbackTextEl.textContent = `TRY AGAIN. You picked ${chosenOptionData.value}.`;
+            
+            // Remove the clicked element
+            clickedElement.remove();
+            
+            console.log(`Incorrect guess: ${chosenOptionData.value}. Guesses made: ${gameState.guessesMade}`);
         }
     }
 }

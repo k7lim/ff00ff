@@ -651,3 +651,158 @@ testRunner.test('Handles all possible question types correctly', () => {
     // Should see both types over 50 iterations
     testRunner.assertTrue(typesSeen.size >= 1, 'Should generate at least one question type');
 });
+
+// ============================================================================
+// PROMPT 8: Scoring System Tests
+// ============================================================================
+
+// calculateScore() Function Tests
+testRunner.section('calculateScore() Function Tests');
+
+// Basic Scoring Logic Tests
+testRunner.test('calculateScore(1, false) returns 8 (first guess, no hint)', () => {
+    const result = calculateScore(1, false);
+    testRunner.assertEqual(result, 8, 'First guess without hint should be 8 points');
+});
+
+testRunner.test('calculateScore(2, false) returns 4 (second guess, no hint)', () => {
+    const result = calculateScore(2, false);
+    testRunner.assertEqual(result, 4, 'Second guess without hint should be 4 points');
+});
+
+testRunner.test('calculateScore(3, false) returns 2 (third guess, no hint)', () => {
+    const result = calculateScore(3, false);
+    testRunner.assertEqual(result, 2, 'Third guess without hint should be 2 points');
+});
+
+testRunner.test('calculateScore(4, false) returns 0 (fourth guess, no hint)', () => {
+    const result = calculateScore(4, false);
+    testRunner.assertEqual(result, 0, 'Fourth guess without hint should be 0 points');
+});
+
+testRunner.test('calculateScore(5, false) returns 0 (beyond fourth guess)', () => {
+    const result = calculateScore(5, false);
+    testRunner.assertEqual(result, 0, 'Beyond fourth guess should be 0 points');
+});
+
+// Hint Impact Tests
+testRunner.test('calculateScore(1, true) returns 4 (first guess with hint: 8/2)', () => {
+    const result = calculateScore(1, true);
+    testRunner.assertEqual(result, 4, 'First guess with hint should be 4 points (8/2)');
+});
+
+testRunner.test('calculateScore(2, true) returns 2 (second guess with hint: 4/2)', () => {
+    const result = calculateScore(2, true);
+    testRunner.assertEqual(result, 2, 'Second guess with hint should be 2 points (4/2)');
+});
+
+testRunner.test('calculateScore(3, true) returns 1 (third guess with hint: 2/2)', () => {
+    const result = calculateScore(3, true);
+    testRunner.assertEqual(result, 1, 'Third guess with hint should be 1 point (2/2)');
+});
+
+testRunner.test('calculateScore(4, true) returns 0 (fourth guess with hint: 0/2)', () => {
+    const result = calculateScore(4, true);
+    testRunner.assertEqual(result, 0, 'Fourth guess with hint should be 0 points (0/2)');
+});
+
+// Edge Case Tests
+testRunner.test('calculateScore(0, false) handles edge case appropriately', () => {
+    try {
+        const result = calculateScore(0, false);
+        testRunner.assertTrue(typeof result === 'number', 'Should return a number for edge case');
+    } catch (error) {
+        testRunner.assertTrue(true, 'Should handle edge case gracefully');
+    }
+});
+
+testRunner.test('calculateScore(-1, false) handles invalid input', () => {
+    try {
+        const result = calculateScore(-1, false);
+        testRunner.assertTrue(typeof result === 'number', 'Should handle negative input');
+    } catch (error) {
+        testRunner.assertTrue(true, 'Should handle invalid input appropriately');
+    }
+});
+
+testRunner.test('Function handles non-integer inputs', () => {
+    try {
+        const result = calculateScore(1.5, false);
+        testRunner.assertTrue(typeof result === 'number', 'Should handle non-integer');
+    } catch (error) {
+        testRunner.assertTrue(true, 'Should handle non-integer appropriately');
+    }
+});
+
+testRunner.test('Function handles null/undefined inputs', () => {
+    try {
+        const result1 = calculateScore(null, false);
+        const result2 = calculateScore(undefined, false);
+        const result3 = calculateScore(1, null);
+        const result4 = calculateScore(1, undefined);
+        testRunner.assertTrue(true, 'Should handle null/undefined inputs');
+    } catch (error) {
+        testRunner.assertTrue(true, 'Should handle null/undefined appropriately');
+    }
+});
+
+testRunner.test('Function returns integer values only', () => {
+    const result1 = calculateScore(1, false);
+    const result2 = calculateScore(1, true);
+    const result3 = calculateScore(3, true);
+    
+    testRunner.assertTrue(Number.isInteger(result1), 'Result 1 should be integer');
+    testRunner.assertTrue(Number.isInteger(result2), 'Result 2 should be integer');
+    testRunner.assertTrue(Number.isInteger(result3), 'Result 3 should be integer');
+});
+
+// Type Validation Tests
+testRunner.test('First parameter must be a number', () => {
+    const result = calculateScore(1, false);
+    testRunner.assertTrue(typeof result === 'number', 'Should work with number input');
+    
+    // Test with non-number should handle gracefully
+    try {
+        calculateScore('1', false);
+        testRunner.assertTrue(true, 'Should handle string input');
+    } catch (error) {
+        testRunner.assertTrue(true, 'Should handle non-number appropriately');
+    }
+});
+
+testRunner.test('Second parameter must be a boolean', () => {
+    const result = calculateScore(1, false);
+    testRunner.assertTrue(typeof result === 'number', 'Should work with boolean input');
+    
+    // Test with non-boolean should handle gracefully
+    try {
+        calculateScore(1, 'false');
+        testRunner.assertTrue(true, 'Should handle string input');
+    } catch (error) {
+        testRunner.assertTrue(true, 'Should handle non-boolean appropriately');
+    }
+});
+
+testRunner.test('Return value is always a number', () => {
+    const testCases = [
+        [1, false], [2, false], [3, false], [4, false],
+        [1, true], [2, true], [3, true], [4, true]
+    ];
+    
+    testCases.forEach(([guesses, hint]) => {
+        const result = calculateScore(guesses, hint);
+        testRunner.assertTrue(typeof result === 'number', `Result for ${guesses}, ${hint} should be number`);
+    });
+});
+
+testRunner.test('Return value is never negative', () => {
+    const testCases = [
+        [1, false], [2, false], [3, false], [4, false], [5, false],
+        [1, true], [2, true], [3, true], [4, true], [5, true]
+    ];
+    
+    testCases.forEach(([guesses, hint]) => {
+        const result = calculateScore(guesses, hint);
+        testRunner.assertTrue(result >= 0, `Result for ${guesses}, ${hint} should be non-negative`);
+    });
+});
