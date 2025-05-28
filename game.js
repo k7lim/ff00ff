@@ -7,11 +7,28 @@
  */
 const MIN_DISTANCE_THRESHOLD = 75;
 
+/**
+ * Game State Variables
+ * These track the current state of the game session
+ */
+let currentScore = 0;
+let currentQuestion = null; // Will hold the object from generateQuestion()
+let hintUsed = false;
+let guessesMade = 0; // Number of incorrect guesses for the current question
+
 // Make available globally for browser compatibility
 if (typeof window !== 'undefined') {
     window.MIN_DISTANCE_THRESHOLD = MIN_DISTANCE_THRESHOLD;
+    window.currentScore = currentScore;
+    window.currentQuestion = currentQuestion;
+    window.hintUsed = hintUsed;
+    window.guessesMade = guessesMade;
 } else {
     global.MIN_DISTANCE_THRESHOLD = MIN_DISTANCE_THRESHOLD;
+    global.currentScore = currentScore;
+    global.currentQuestion = currentQuestion;
+    global.hintUsed = hintUsed;
+    global.guessesMade = guessesMade;
 }
 
 /**
