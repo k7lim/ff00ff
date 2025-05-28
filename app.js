@@ -74,6 +74,12 @@ function initializeDOMElements() {
         console.log('New game button clicked');
         startNewQuestion();
     });
+    
+    // Add event listener to hint button
+    hintButtonEl.addEventListener('click', () => {
+        console.log('Hint button clicked');
+        handleHintClick();
+    });
 }
 
 /**
@@ -269,6 +275,86 @@ function handleGuess(event, chosenOptionData) {
             console.log(`Incorrect guess: ${chosenOptionData.value}. Guesses made: ${gameState.guessesMade}`);
         }
     }
+}
+
+/**
+ * Renders a hex code with colored R, G, B components for hint display
+ * @param {string} hexString - Hex color string (e.g., "#AABBCC")
+ * @returns {string} HTML string with colored components
+ */
+function renderHexWithHint(hexString) {
+    // Input validation
+    if (!hexString || typeof hexString !== 'string') {
+        throw new Error('Invalid hex string provided');
+    }
+    
+    // Remove # if present and ensure uppercase
+    let hex = hexString.startsWith('#') ? hexString.slice(1) : hexString;
+    hex = hex.toUpperCase();
+    
+    // Validate hex format
+    if (hex.length !== 6 || !/^[0-9A-F]{6}$/.test(hex)) {
+        throw new Error('Hex string must be exactly 6 valid hex characters');
+    }
+    
+    // Extract R, G, B components
+    const rComponent = hex.slice(0, 2);
+    const gComponent = hex.slice(2, 4);
+    const bComponent = hex.slice(4, 6);
+    
+    // Create colored HTML with text-stroke class
+    const html = `<span class="hex-code-text">#</span><span class="hex-code-text" style="color:#${rComponent}0000;">${rComponent}</span><span class="hex-code-text" style="color:#00${gComponent}00;">${gComponent}</span><span class="hex-code-text" style="color:#0000${bComponent};">${bComponent}</span>`;
+    
+    return html;
+}
+
+/**
+ * Handles hint button click event
+ * Applies visual hints to hex codes and manages button state
+ */
+function handleHintClick() {
+    // Return early if hint already used or question is over
+    if (gameState.hintUsed || questionOver) {
+        return;
+    }
+    
+    // Set hint as used
+    gameState.hintUsed = true;
+    
+    // Update button text and disable it
+    hintButtonEl.textContent = "Hint Shown";
+    hintButtonEl.disabled = true;
+    
+    // Apply visual hint based on question type
+    if (gameState.currentQuestion.type === 'identify_color') {
+        // Update hex code options with colored hints
+        const optionElements = Array.from(optionsAreaEl.children);
+        optionElements.forEach(element => {
+            const hexValue = element.dataset.value || element.textContent;
+            if (hexValue && hexValue.startsWith('#')) {
+                try {
+                    element.innerHTML = renderHexWithHint(hexValue);
+                } catch (error) {
+                    console.warn(`Failed to render hint for ${hexValue}:`, error.message);
+                }
+            }
+        });
+    } else if (gameState.currentQuestion.type === 'identify_swatch') {
+        // Update main question hex code with colored hints
+        const questionElements = Array.from(questionAreaEl.children);
+        questionElements.forEach(element => {
+            const hexValue = gameState.currentQuestion.questionDisplayValue;
+            if (hexValue && hexValue.startsWith('#')) {
+                try {
+                    element.innerHTML = renderHexWithHint(hexValue);
+                } catch (error) {
+                    console.warn(`Failed to render hint for question ${hexValue}:`, error.message);
+                }
+            }
+        });
+    }
+    
+    console.log('Hint applied for question type:', gameState.currentQuestion.type);
 }
 
 /**

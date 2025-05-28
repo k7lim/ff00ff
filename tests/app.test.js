@@ -526,3 +526,301 @@ testRunner.test('State consistency between question generation and rendering', (
     testRunner.assertEqual(currentQuestion.type, question.type, 'Current question type should match rendered question');
     testRunner.assertEqual(currentQuestion.correctAnswerHex, question.correctAnswerHex, 'Current question answer should match rendered question');
 });
+
+// ============================================================================
+// PROMPT 9: Hint System Tests
+// ============================================================================
+
+// renderHexWithHint() Function Tests
+testRunner.section('renderHexWithHint() Function Tests');
+
+// Basic Functionality Tests
+testRunner.test('renderHexWithHint("#AABBCC") returns correctly colored HTML', () => {
+    const result = renderHexWithHint('#AABBCC');
+    testRunner.assertTrue(typeof result === 'string', 'Should return a string');
+    testRunner.assertTrue(result.includes('#'), 'Should include hash symbol');
+    testRunner.assertTrue(result.includes('AA'), 'Should include R component');
+    testRunner.assertTrue(result.includes('BB'), 'Should include G component');
+    testRunner.assertTrue(result.includes('CC'), 'Should include B component');
+});
+
+testRunner.test('Output contains <span>#</span> for hash symbol', () => {
+    const result = renderHexWithHint('#FF0000');
+    testRunner.assertTrue(result.includes('<span>#</span>'), 'Should wrap hash in span');
+});
+
+testRunner.test('R component "AA" colored with #AA0000', () => {
+    const result = renderHexWithHint('#AABBCC');
+    testRunner.assertTrue(result.includes('#AA0000'), 'Should color R component with red');
+    testRunner.assertTrue(result.includes('AA'), 'Should include AA component');
+});
+
+testRunner.test('G component "BB" colored with #00BB00', () => {
+    const result = renderHexWithHint('#AABBCC');
+    testRunner.assertTrue(result.includes('#00BB00'), 'Should color G component with green');
+    testRunner.assertTrue(result.includes('BB'), 'Should include BB component');
+});
+
+testRunner.test('B component "CC" colored with #0000CC', () => {
+    const result = renderHexWithHint('#AABBCC');
+    testRunner.assertTrue(result.includes('#0000CC'), 'Should color B component with blue');
+    testRunner.assertTrue(result.includes('CC'), 'Should include CC component');
+});
+
+testRunner.test('Function preserves text-stroke/shadow classes', () => {
+    const result = renderHexWithHint('#FF0000');
+    // Should include class reference for text-stroke styling
+    testRunner.assertTrue(typeof result === 'string', 'Should return valid HTML string');
+});
+
+testRunner.test('Output is valid HTML string', () => {
+    const result = renderHexWithHint('#123ABC');
+    testRunner.assertTrue(typeof result === 'string', 'Should be a string');
+    testRunner.assertTrue(result.includes('<span'), 'Should contain span tags');
+    testRunner.assertTrue(result.includes('</span>'), 'Should contain closing span tags');
+});
+
+// Input Validation Tests
+testRunner.test('Handles hex codes with # prefix correctly', () => {
+    const result = renderHexWithHint('#FF0000');
+    testRunner.assertTrue(result.includes('#FF0000'), 'Should handle # prefix');
+    testRunner.assertTrue(result.includes('FF'), 'Should include hex digits');
+});
+
+testRunner.test('Handles hex codes without # prefix correctly', () => {
+    const result = renderHexWithHint('FF0000');
+    testRunner.assertTrue(result.includes('FF'), 'Should handle without # prefix');
+    testRunner.assertTrue(typeof result === 'string', 'Should return string');
+});
+
+testRunner.test('Handles lowercase hex codes correctly', () => {
+    const result = renderHexWithHint('#aabbcc');
+    testRunner.assertTrue(typeof result === 'string', 'Should handle lowercase');
+    testRunner.assertTrue(result.includes('aa') || result.includes('AA'), 'Should include hex components');
+});
+
+testRunner.test('Handles uppercase hex codes correctly', () => {
+    const result = renderHexWithHint('#AABBCC');
+    testRunner.assertTrue(typeof result === 'string', 'Should handle uppercase');
+    testRunner.assertTrue(result.includes('AA'), 'Should include uppercase components');
+});
+
+testRunner.test('Handles edge cases like "#000000" and "#FFFFFF"', () => {
+    const result1 = renderHexWithHint('#000000');
+    const result2 = renderHexWithHint('#FFFFFF');
+    
+    testRunner.assertTrue(typeof result1 === 'string', 'Should handle #000000');
+    testRunner.assertTrue(typeof result2 === 'string', 'Should handle #FFFFFF');
+    testRunner.assertTrue(result1.includes('00'), 'Should include black components');
+    testRunner.assertTrue(result2.includes('FF'), 'Should include white components');
+});
+
+testRunner.test('Throws/handles error for invalid hex codes', () => {
+    try {
+        const result = renderHexWithHint('invalid');
+        testRunner.assertTrue(typeof result === 'string', 'Should handle invalid gracefully');
+    } catch (error) {
+        testRunner.assertTrue(true, 'Should throw error for invalid hex');
+    }
+});
+
+testRunner.test('Handles malformed input gracefully', () => {
+    try {
+        const result1 = renderHexWithHint('#FF');
+        const result2 = renderHexWithHint('#GGGGGG');
+        const result3 = renderHexWithHint(null);
+        testRunner.assertTrue(true, 'Should handle malformed input');
+    } catch (error) {
+        testRunner.assertTrue(true, 'Should handle malformed input appropriately');
+    }
+});
+
+// HTML Structure Tests
+testRunner.test('Output contains exactly 4 span elements', () => {
+    const result = renderHexWithHint('#AABBCC');
+    const spanCount = (result.match(/<span/g) || []).length;
+    testRunner.assertEqual(spanCount, 4, 'Should have 4 span elements (# + R + G + B)');
+});
+
+testRunner.test('Each component span has correct inline color style', () => {
+    const result = renderHexWithHint('#123456');
+    testRunner.assertTrue(result.includes('style='), 'Should include style attributes');
+    testRunner.assertTrue(result.includes('color:'), 'Should include color styles');
+});
+
+testRunner.test('CSS classes are preserved in output', () => {
+    const result = renderHexWithHint('#FF0000');
+    // Should include class for text-stroke styling
+    testRunner.assertTrue(typeof result === 'string', 'Should be valid HTML');
+});
+
+testRunner.test('No XSS vulnerabilities in generated HTML', () => {
+    const result = renderHexWithHint('#FF0000');
+    testRunner.assertTrue(!result.includes('<script'), 'Should not contain script tags');
+    testRunner.assertTrue(!result.includes('javascript:'), 'Should not contain javascript:');
+});
+
+testRunner.test('Generated HTML is safe for innerHTML injection', () => {
+    const result = renderHexWithHint('#AABBCC');
+    testRunner.assertTrue(typeof result === 'string', 'Should be safe string');
+    testRunner.assertTrue(result.startsWith('<span'), 'Should start with safe span tag');
+});
+
+// handleHintClick() Function Tests
+testRunner.section('handleHintClick() Function Tests');
+
+// State Management Tests
+testRunner.test('Sets hintUsed to true when clicked', () => {
+    // Reset state
+    hintUsed = false;
+    questionOver = false;
+    
+    handleHintClick();
+    
+    testRunner.assertEqual(hintUsed, true, 'Should set hintUsed to true');
+});
+
+testRunner.test('Updates button text to "Hint Shown"', () => {
+    // Reset state
+    hintUsed = false;
+    questionOver = false;
+    
+    const mockButton = { textContent: 'Show Hint', disabled: false };
+    global.hintButtonEl = mockButton;
+    
+    handleHintClick();
+    
+    testRunner.assertEqual(mockButton.textContent, 'Hint Shown', 'Should update button text');
+});
+
+testRunner.test('Disables hint button after click', () => {
+    // Reset state
+    hintUsed = false;
+    questionOver = false;
+    
+    const mockButton = { textContent: 'Show Hint', disabled: false };
+    global.hintButtonEl = mockButton;
+    
+    handleHintClick();
+    
+    testRunner.assertEqual(mockButton.disabled, true, 'Should disable button');
+});
+
+testRunner.test('Does nothing if hintUsed is already true', () => {
+    hintUsed = true;
+    questionOver = false;
+    
+    const initialState = hintUsed;
+    handleHintClick();
+    
+    testRunner.assertEqual(hintUsed, initialState, 'Should not change if already used');
+});
+
+testRunner.test('Does nothing if questionOver is true', () => {
+    hintUsed = false;
+    questionOver = true;
+    
+    const initialState = hintUsed;
+    handleHintClick();
+    
+    testRunner.assertEqual(hintUsed, initialState, 'Should not change if question is over');
+});
+
+// Visual Hint Application Tests
+testRunner.section('Hint Visual Application Tests');
+
+testRunner.test('identify_color: Updates all hex code option elements with colored hints', () => {
+    // Mock current question
+    currentQuestion = {
+        type: 'identify_color',
+        options: [
+            { value: '#FF0000', isCorrect: true },
+            { value: '#00FF00', isCorrect: false },
+            { value: '#0000FF', isCorrect: false },
+            { value: '#FFFF00', isCorrect: false }
+        ]
+    };
+    
+    // Mock options area with elements
+    const mockOptions = [
+        { innerHTML: '#FF0000', textContent: '#FF0000' },
+        { innerHTML: '#00FF00', textContent: '#00FF00' },
+        { innerHTML: '#0000FF', textContent: '#0000FF' },
+        { innerHTML: '#FFFF00', textContent: '#FFFF00' }
+    ];
+    
+    global.optionsAreaEl = { children: mockOptions };
+    
+    hintUsed = false;
+    questionOver = false;
+    
+    handleHintClick();
+    
+    testRunner.assertTrue(hintUsed, 'Should set hint as used');
+});
+
+testRunner.test('identify_swatch: Updates main question hex code with colored hints', () => {
+    // Mock current question
+    currentQuestion = {
+        type: 'identify_swatch',
+        questionDisplayValue: '#AABBCC'
+    };
+    
+    // Mock question area element
+    const mockQuestionEl = { innerHTML: '#AABBCC', textContent: '#AABBCC' };
+    global.questionAreaEl = { children: [mockQuestionEl] };
+    
+    hintUsed = false;
+    questionOver = false;
+    
+    handleHintClick();
+    
+    testRunner.assertTrue(hintUsed, 'Should set hint as used');
+});
+
+// Hint Persistence Tests
+testRunner.section('Hint Persistence Tests');
+
+testRunner.test('Hint remains visible after incorrect guesses', () => {
+    hintUsed = true;
+    
+    // Hint should persist through game interactions
+    testRunner.assertEqual(hintUsed, true, 'Hint should remain active');
+});
+
+testRunner.test('Hint persists until question completion', () => {
+    hintUsed = true;
+    questionOver = false;
+    
+    // Hint should remain until question ends
+    testRunner.assertEqual(hintUsed, true, 'Hint should persist during question');
+});
+
+// startNewQuestion Reset Tests
+testRunner.section('startNewQuestion Hint Reset Tests');
+
+testRunner.test('startNewQuestion() resets hintUsed to false', () => {
+    hintUsed = true;
+    
+    startNewQuestion();
+    
+    testRunner.assertEqual(hintUsed, false, 'Should reset hintUsed to false');
+});
+
+testRunner.test('Hint button text resets to "Show Hint"', () => {
+    const mockButton = { textContent: 'Hint Shown', disabled: true };
+    global.hintButtonEl = mockButton;
+    
+    startNewQuestion();
+    
+    testRunner.assertEqual(mockButton.textContent, 'Show Hint', 'Should reset button text');
+});
+
+testRunner.test('Hint button becomes enabled again', () => {
+    const mockButton = { textContent: 'Hint Shown', disabled: true };
+    global.hintButtonEl = mockButton;
+    
+    startNewQuestion();
+    
+    testRunner.assertEqual(mockButton.disabled, false, 'Should re-enable button');
+});

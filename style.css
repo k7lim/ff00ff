@@ -55,3 +55,10 @@ body {
     margin-bottom: 15px;
     color: #333;
 }
+
+/* Hex code text styling with text-stroke for readability */
+.hex-code-text {
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    font-family: monospace;
+    font-weight: bold;
+}
