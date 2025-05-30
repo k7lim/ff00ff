@@ -17,7 +17,7 @@ Let's start with the foundational elements.
 
 ---
 
-**Prompt 1: Basic HTML and CSS Setup** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
+**Prompt 1: Basic HTML and CSS Setup** &nbsp;&nbsp;&nbsp;&nbsp; Started? [x] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [x]
 
 ```text
 We are starting a new project called HexVex, a hex color quiz game.
@@ -48,215 +48,457 @@ We are starting a new project called HexVex, a hex color quiz game.
 
 ---
 
-**Prompt 2: Core Color Utilities** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
+**Prompt 2: Core Color Utilities with TDD Test Suite** &nbsp;&nbsp;&nbsp;&nbsp; Started? [x] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [x]
 
 ```text
-Okay, we have the basic HTML and CSS. Now, let's implement the core color utility functions in `utils.js`.
+Following TDD principles, we'll write comprehensive tests BEFORE implementing the color utility functions.
 
-**Task:** Create and export functions in `utils.js`.
+**Task:** Create test files and implement core color utilities using TDD.
+
+**File Structure to Create:**
+```
+hexvex/
+├── tests/
+│   ├── utils.test.js
+│   ├── game.test.js
+│   └── test-runner.html
+├── utils.js
+├── game.js
+└── app.js
+```
+
+**Step 1: Create Test Infrastructure**
+
+**`tests/test-runner.html` requirements:**
+1.  Basic HTML page that loads all test files
+2.  Simple test framework or use browser's console for output
+3.  Include all source files (utils.js, game.js) and test files
+4.  Display test results clearly (pass/fail counts, specific failures)
+
+**Step 2: Write Failing Tests First**
+
+**`tests/utils.test.js` requirements:**
+
+**Unit Tests for `generateRandomHexColor()`:**
+*   Test: Returns string starting with '#'
+*   Test: Returns exactly 7 characters (# + 6 hex digits)
+*   Test: Only contains valid hex characters (0-9, A-F)
+*   Test: Multiple calls return different values (randomness check)
+*   Test: All returned values are valid hex colors
+*   Edge case: No parameters required
+
+**Unit Tests for `hexToRgb(hexString)`:**
+*   Test: `hexToRgb("#FF00FF")` returns `{ r: 255, g: 0, b: 255 }`
+*   Test: `hexToRgb("00FF00")` returns `{ r: 0, g: 255, b: 0 }` (no # prefix)
+*   Test: `hexToRgb("#000000")` returns `{ r: 0, g: 0, b: 0 }`
+*   Test: `hexToRgb("#FFFFFF")` returns `{ r: 255, g: 255, b: 255 }`
+*   Test: `hexToRgb("#123ABC")` returns `{ r: 18, g: 58, b: 188 }`
+*   Error case: Invalid hex string should throw error or return null
+*   Error case: Wrong length string should throw error or return null
+*   Error case: Non-hex characters should throw error or return null
+
+**Unit Tests for `calculateColorDistance(rgb1, rgb2)`:**
+*   Test: `calculateColorDistance({ r: 255, g: 0, b: 0 }, { r: 250, g: 5, b: 10 })` returns 20
+*   Test: `calculateColorDistance({ r: 0, g: 0, b: 0 }, { r: 255, g: 255, b: 255 })` returns 765 (max distance)
+*   Test: `calculateColorDistance({ r: 100, g: 100, b: 100 }, { r: 100, g: 100, b: 100 })` returns 0 (identical colors)
+*   Test: `calculateColorDistance({ r: 128, g: 64, b: 192 }, { r: 130, g: 60, b: 200 })` returns 14
+*   Error case: Invalid RGB object should throw error
+*   Error case: RGB values outside 0-255 range should throw error or clamp
+
+**Integration Tests:**
+*   Test: Generate random hex, convert to RGB, distance to itself is 0
+*   Test: Generate two random hex colors, convert both to RGB, calculate distance
+*   Test: Chain all functions together in realistic usage scenario
+
+**Step 3: Implement Functions to Pass Tests**
 
 **`utils.js` requirements:**
+1.  Implement functions to make ALL tests pass
+2.  Add proper error handling as defined by tests
+3.  Include 2-line ABOUTME comment at top of file
+4.  Use TDD cycle: write minimal code to pass each test, then refactor
 
-1.  **`generateRandomHexColor()`:**
-    *   Returns a string representing a random hex color (e.g., "#RRGGBB").
-    *   Ensure it's a full 6-digit hex code, always starting with '#'.
-    *   Test: Call it multiple times, verify format and randomness.
+**Step 4: Test Execution and Verification**
+*   Run all tests and verify 100% pass rate
+*   Test output must be pristine (no console errors, warnings, or unexpected output)
+*   Document any test failures and fix implementation accordingly
+*   Ensure functions are globally accessible for other modules
 
-2.  **`hexToRgb(hexString)`:**
-    *   Takes a hex color string (e.g., "#FF00FF" or "FF00FF") as input.
-    *   Returns an object `{ r, g, b }` with integer values from 0-255.
-    *   Handle hex strings with or without the leading '#'.
-    *   Test: `hexToRgb("#FF00FF")` should return `{ r: 255, g: 0, b: 255 }`.
-    *   Test: `hexToRgb("00FF00")` should return `{ r: 0, g: 255, b: 0 }`.
-
-3.  **`calculateColorDistance(rgb1, rgb2)`:**
-    *   Takes two RGB color objects (e.g., `{ r: 255, g: 0, b: 0 }`) as input.
-    *   Calculates distance using the formula: `Distance = |R1-R2| + |G1-G2| + |B1-B2|`.
-    *   Returns the calculated distance (an integer).
-    *   Test: `calculateColorDistance({ r: 255, g: 0, b: 0 }, { r: 250, g: 5, b: 10 })` should return `( |255-250| + |0-5| + |0-10| ) = 5 + 5 + 10 = 20`.
-
-**Provide simple console log tests within the file (or suggest how to test them from the browser console) to verify each function works as expected.**
-Make sure these functions are accessible for import by other JS files (e.g., using `export` if modules are intended, or global functions if not explicitly using modules. For simplicity, let's assume global functions or direct script includes mean they'll be available in order. If you plan to use ES6 modules, set that up).
-
-Let's stick to plain JS without explicit module syntax for now to keep it simple, assuming `utils.js` is loaded before `game.js` and `app.js`. So, functions can be globally accessible or wrapped in an IIFE that exposes them.
+**Testing Commands:**
+*   Open `tests/test-runner.html` in browser
+*   All tests should pass with green indicators
+*   Console should show detailed test results
+*   Any failures should show expected vs actual values clearly
 ```
 
 ---
 
-**Prompt 3: Question Generation Logic - Options and Distinctness** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
+**Prompt 3: Question Generation Logic with TDD Test Suite** &nbsp;&nbsp;&nbsp;&nbsp; Started? [x] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [x]
 
 ```text
-With the color utilities in place, let's move to `game.js` and start building the question generation logic. This is a critical part, especially the color distinctness.
+Following TDD principles, we'll write comprehensive tests BEFORE implementing the question generation logic.
 
-**Task:** Implement functions in `game.js` to generate question options while ensuring color distinctness.
+**Task:** Write tests first, then implement question generation functions using TDD.
+
+**Step 1: Write Failing Tests First**
+
+**`tests/game.test.js` requirements:**
+
+**Unit Tests for `MIN_DISTANCE_THRESHOLD` Constant:**
+*   Test: Constant is defined and equals 75
+*   Test: Constant is a number type
+*   Test: Constant is not modifiable (if using const)
+
+**Unit Tests for `generateQuestionOptions()` function:**
+
+**Return Value Structure Tests:**
+*   Test: Returns an object with `correctHex` and `distractors` properties
+*   Test: `correctHex` is a valid hex string (starts with #, 7 characters, valid hex)
+*   Test: `distractors` is an array with exactly 3 elements
+*   Test: All distractor elements are valid hex strings
+*   Test: `correctHex` is different from all distractors
+*   Test: All distractors are different from each other
+
+**Color Distinctness Tests (Critical):**
+*   Test: Distance between correct color and each distractor >= 75
+*   Test: Distance between each pair of distractors >= 75  
+*   Test: All 6 unique pairs meet the distance threshold
+*   Test: Function eventually succeeds even with difficult color combinations
+*   Test: Maximum regeneration attempts don't exceed reasonable limit (e.g., 100 tries)
+
+**Randomness Tests:**
+*   Test: Multiple calls return different correct colors
+*   Test: Multiple calls return different distractor sets
+*   Test: Color distribution appears random (not clustered)
+
+**Performance Tests:**
+*   Test: Function completes within reasonable time (< 1 second)
+*   Test: Regeneration loop doesn't run excessively (log warnings for > 10 attempts)
+*   Test: Memory usage doesn't grow excessively during regeneration
+
+**Integration Tests with Utils:**
+*   Test: Uses `generateRandomHexColor()` correctly
+*   Test: Uses `hexToRgb()` correctly
+*   Test: Uses `calculateColorDistance()` correctly
+*   Test: All utils functions are called with valid parameters
+
+**Edge Case Tests:**
+*   Test: Function works consistently across 100+ iterations
+*   Test: No infinite loops occur (add timeout protection)
+*   Test: Handles extreme color values (very dark, very bright)
+
+**Step 2: Implement Functions to Pass Tests**
 
 **`game.js` requirements:**
 
-1.  **`MIN_DISTANCE_THRESHOLD` Constant:**
-    *   Define a constant `MIN_DISTANCE_THRESHOLD = 75;`.
+1.  **Add ABOUTME comment** (2 lines describing the file's purpose)
 
-2.  **`generateQuestionOptions()` function:**
-    *   This function will be responsible for creating a set of one correct color and three distinct distractor colors.
-    *   **Refined Regeneration Logic (as per spec):** The spec states: "If *any* pair is found to be 'too similar,' discard *all three* current distractors and return to step 2 (generate a brand new set of three distractors)."
-        Let's implement *this specific regeneration logic*:
-        Revised Step:
-        1. Generate `correctHex` and `correctRgb` using `generateRandomHexColor()` and `hexToRgb()`.
-        2. Start a `do...while` loop that continues until a valid set of 3 distractors is found.
-           a. `distractors = []` (array of hex strings)
-           b. `distractorRgbs = []`
-           c. Generate 3 random distractor hex codes and their RGB versions. Store them.
-           d. `allColorsHex = [correctHex, ...distractors]`
-           e. `allColorsRgb = [correctRgb, ...distractorRgbs]`
-           f. `isDistinctSet = true`
-           g. Iterate through all unique pairs in `allColorsRgb`. If `calculateColorDistance(pairColor1, pairColor2) < MIN_DISTANCE_THRESHOLD` for *any* pair, set `isDistinctSet = false` and `break` this inner loop.
-           h. The `do...while` loop condition is `!isDistinctSet`.
-        3. If the loop finishes, `distractors` contains 3 hex codes that are distinct from the correct answer and from each other.
+2.  **`MIN_DISTANCE_THRESHOLD` Constant:**
+    *   Define as `const MIN_DISTANCE_THRESHOLD = 75;`
 
-    *   **Return Value:** An object `{ correctHex: "...", distractors: ["...", "...", "..."] }`.
-    *   **Logging:** Add `console.log` statements if the distractor regeneration loop runs more than, say, 5-10 times for a single call, to monitor its efficiency. "Distractor regeneration attempts: [count]".
+3.  **`generateQuestionOptions()` function:**
+    *   Implement the exact regeneration logic specified in the spec
+    *   Add safety mechanisms (max iterations, timeout protection)
+    *   Add performance logging for regeneration attempts > 10
+    *   Ensure all tests pass with pristine output
 
-**Testing:**
-*   In `game.js` or via the browser console:
-    *   Call `generateQuestionOptions()` multiple times.
-    *   For each result, manually (or with a helper test function) verify:
-        *   It returns one `correctHex` and an array of three `distractorHexes`.
-        *   Convert all four hexes to RGB.
-        *   Calculate the distance between all unique pairs (Correct-D1, Correct-D2, Correct-D3, D1-D2, D1-D3, D2-D3).
-        *   Ensure all 6 distances are `>= MIN_DISTANCE_THRESHOLD`.
-    *   This function might take a few tries to get right, so focus on robust testing of the distinctness logic.
+**Step 3: Test-Driven Implementation Process**
 
-(Note: The spec's regeneration ("discard *all three* current distractors") is computationally more expensive but explicitly requested. We'll follow that.)
+1.  **Red Phase:** Write failing tests first
+2.  **Green Phase:** Write minimal code to pass each test
+3.  **Refactor Phase:** Improve code while keeping tests green
+4.  **Repeat:** For each new test case
+
+**Step 4: Comprehensive Test Execution**
+
+**Testing Commands:**
+*   Run all utils tests (should still pass)
+*   Run all game tests 
+*   Execute integration tests combining both modules
+*   Performance test: Run `generateQuestionOptions()` 1000 times, verify consistency
+*   Stress test: Ensure no memory leaks or infinite loops
+
+**Success Criteria:**
+*   100% test pass rate
+*   No console errors, warnings, or unexpected output
+*   All 6 color pair distances >= 75 in every generated question
+*   Function completes reliably within performance bounds
+*   Logging shows regeneration efficiency (warn if > 10 attempts)
+
+**Error Handling Tests:**
+*   Test: Function handles edge cases gracefully
+*   Test: Invalid utility function responses are handled
+*   Test: Memory constraints don't cause crashes
 ```
 
 ---
 
-**Prompt 4: Full Question Object Generation** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
+**Prompt 4: Full Question Object Generation with TDD Test Suite** &nbsp;&nbsp;&nbsp;&nbsp; Started? [x] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [x]
 
 ```text
-We can now generate a set of distinct color options. Next, let's create the full question object, including randomizing the question type and the order of options.
+Following TDD principles, we'll write comprehensive tests BEFORE implementing the full question generation logic.
 
-**Task:** Implement `generateQuestion()` in `game.js`.
+**Task:** Write tests first, then implement `generateQuestion()` using TDD.
+
+**Step 1: Write Failing Tests First**
+
+**Add to `tests/game.test.js`:**
+
+**Unit Tests for `generateQuestion()` function:**
+
+**Return Object Structure Tests:**
+*   Test: Returns object with required properties: `type`, `questionDisplayValue`, `options`, `correctAnswerHex`
+*   Test: `type` is either `'identify_color'` or `'identify_swatch'`
+*   Test: `questionDisplayValue` is a valid hex string (starts with #, 7 chars, valid hex)
+*   Test: `correctAnswerHex` is a valid hex string
+*   Test: `questionDisplayValue` equals `correctAnswerHex`
+*   Test: `options` is an array with exactly 4 elements
+
+**Options Array Tests:**
+*   Test: Each option has `value`, `isCorrect`, and `id` properties
+*   Test: All option `value` properties are valid hex strings
+*   Test: Exactly one option has `isCorrect: true`
+*   Test: Three options have `isCorrect: false`
+*   Test: The correct option's `value` matches `correctAnswerHex`
+*   Test: All option `id` values are unique
+*   Test: Option `id` values follow expected format (e.g., "option_0", "option_1", etc.)
+
+**Randomization Tests:**
+*   Test: Question type distribution is approximately 50/50 over 100 iterations
+*   Test: Correct answer position varies across multiple generations
+*   Test: Each position (0,1,2,3) gets the correct answer roughly equally over 100 iterations
+*   Test: Option order is truly randomized (not just rotated)
+
+**Integration Tests:**
+*   Test: Uses `generateQuestionOptions()` correctly
+*   Test: All colors from `generateQuestionOptions()` appear in final options
+*   Test: Color distinctness is preserved from `generateQuestionOptions()`
+*   Test: No duplicate colors in final options array
+
+**Consistency Tests:**
+*   Test: Generated question is internally consistent
+*   Test: Correct answer appears exactly once in options
+*   Test: All 4 colors from question options are present in final options
+*   Test: No extra or missing colors
+
+**Performance Tests:**
+*   Test: Function completes quickly (< 100ms)
+*   Test: Consistent performance across multiple calls
+*   Test: No memory leaks over many iterations
+
+**Edge Case Tests:**
+*   Test: Function works reliably across 1000+ iterations
+*   Test: No duplicate questions generated consecutively (different enough)
+*   Test: Handles all possible question types correctly
+
+**Step 2: Implement Shuffle Algorithm Tests**
+
+**Shuffle Function Tests (if implementing separate shuffle):**
+*   Test: Array length remains the same after shuffle
+*   Test: All original elements are preserved
+*   Test: Order is actually changed (not identity shuffle)
+*   Test: Distribution is approximately uniform over many shuffles
+*   Test: Works with different array sizes
+*   Test: Handles edge cases (empty array, single element)
+
+**Step 3: Implement Functions to Pass Tests**
 
 **`game.js` requirements:**
 
-1.  **`generateQuestion()` function:**
-    *   **Determine Question Type:** Randomly decide if the question is `'identify_color'` (show swatch, guess hex) or `'identify_swatch'` (show hex, guess swatch). A 50/50 chance.
-    *   **Get Color Options:** Call `generateQuestionOptions()` to get the `{ correctHex, distractors }`.
-    *   **Prepare Options Array:**
-        *   Create an array `allOptions`.
-        *   Add an object for the correct answer: `{ value: correctHex, isCorrect: true }`.
-        *   For each distractor hex, add an object: `{ value: distractorHex, isCorrect: false }`.
-        *   This array will now have 4 option objects.
-    *   **Randomize Option Order:** Shuffle the `allOptions` array randomly so the correct answer isn't always in the same position. (A common way is the Fisher-Yates shuffle algorithm, or a simpler sort with `Math.random()`).
-    *   **Return Question Object:**
-        Return an object with the following structure:
-        ```javascript
-        {
-          type: 'identify_color', // or 'identify_swatch'
-          questionDisplayValue: correctHex, // This is the hex of the color to be shown as a big swatch (if type 1) or as text (if type 2)
-          options: [ // The shuffled array of 4 option objects
-            { value: hexString1, isCorrect: boolean, id: uniqueIdForOption1 }, // value is always a hex string
-            { value: hexString2, isCorrect: boolean, id: uniqueIdForOption2 },
-            // ... and so on for 4 options
-          ],
-          correctAnswerHex: correctHex // Store the unambiguous correct hex string
-        }
-        ```
-        *   Add a simple unique `id` (e.g., `option_0`, `option_1` etc. or just index) to each option object. This might be useful later for DOM element association.
+1.  **`generateQuestion()` function implementation:**
+    *   Determine question type with proper randomization
+    *   Call `generateQuestionOptions()` for color data
+    *   Build options array with correct structure
+    *   Implement proper shuffling algorithm (Fisher-Yates recommended)
+    *   Add unique IDs to each option
+    *   Return properly structured question object
 
-**Testing:**
-*   In `game.js` or via browser console:
-    *   Call `generateQuestion()` multiple times.
-    *   Log the returned object.
-    *   Verify:
-        *   `type` is either `'identify_color'` or `'identify_swatch'`.
-        *   `questionDisplayValue` is a valid hex string.
-        *   `options` array has 4 items.
-        *   Exactly one option in `options` has `isCorrect: true`.
-        *   The `value` of the correct option matches `correctAnswerHex` and `questionDisplayValue`.
-        *   The order of options appears random across multiple calls.
-        *   All hex strings are valid.
-        *   Each option has a `value` (hex string) and an `isCorrect` boolean.
+2.  **Shuffling implementation:**
+    *   Use proper randomization (not Math.random() sort)
+    *   Ensure uniform distribution
+    *   Test shuffling function independently
+
+**Step 4: Test-Driven Implementation Process**
+
+1.  **Red Phase:** Write all failing tests for question generation
+2.  **Green Phase:** Implement minimal code to pass tests
+3.  **Refactor Phase:** Optimize while keeping tests green
+4.  **Integration Phase:** Ensure compatibility with existing functions
+
+**Step 5: Comprehensive Test Execution**
+
+**Testing Commands:**
+*   Run all previous tests (utils, game options) - should still pass
+*   Run new generateQuestion tests
+*   Statistical validation: Generate 1000 questions, verify randomization
+*   Integration test: Full pipeline from utils → options → question
+
+**Success Criteria:**
+*   100% test pass rate
+*   Statistical randomization validation passes
+*   No console errors or warnings
+*   All questions have distinct color options (distance >= 75)
+*   Question types distributed 50/50 (±5%) over large samples
+*   Correct answer positions distributed evenly (±5%) over large samples
+
+**Validation Tests:**
+*   Generate 1000 questions and verify:
+    *   Type distribution: ~500 identify_color, ~500 identify_swatch
+    *   Position distribution: ~250 correct answers at each position
+    *   No duplicate question structures
+    *   All color distance requirements met
 ```
 
 ---
 
-**Prompt 5: Game State and Basic UI Rendering** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
+**Prompt 5: Game State and Basic UI Rendering with TDD Test Suite** &nbsp;&nbsp;&nbsp;&nbsp; Started? [x] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [x]
 
 ```text
-Now that we can generate complete question objects, let's set up basic game state variables and render a question to the DOM.
+Following TDD principles, we'll write comprehensive tests for UI rendering and state management BEFORE implementation.
 
-**Task:** Initialize game state in `game.js`, get DOM elements in `app.js`, and implement initial rendering logic.
+**Task:** Write tests first, then implement game state and UI rendering using TDD.
 
-**`game.js` requirements:**
+**Step 1: Create UI Test Infrastructure**
 
-1.  **Game State Variables:** At the top level of `game.js` (or within a game state object if you prefer), define:
-    *   `let currentScore = 0;`
-    *   `let currentQuestion = null;` // Will hold the object from generateQuestion()
-    *   `let hintUsed = false;`
-    *   `let guessesMade = 0;` // Number of incorrect guesses for the current question
+**`tests/app.test.js` requirements:**
 
-**`app.js` requirements:**
+**DOM Setup Tests:**
+*   Test: All required DOM elements exist in index.html
+*   Test: DOM elements have correct IDs and structure
+*   Test: Elements can be successfully queried with getElementById
+*   Test: `feedback-text` div is created and accessible
+*   Test: DOM elements have appropriate initial states (visibility, content)
 
-1.  **DOM Element References:**
-    *   At the beginning of `app.js`, get and store references to the DOM elements created in Prompt 1:
-        *   `scoreDisplayEl` (for `score-display`)
-        *   `questionAreaEl` (for `question-area`)
-        *   `optionsAreaEl` (for `options-area`)
-        *   `feedbackAreaEl` (for `feedback-area`)
-        *   `hintButtonEl` (for `hint-button`)
-        *   `newGameButtonEl` (for `new-game-button`)
-    *   Add a new `div` inside `feedback-area` with `id="feedback-text"` for messages, and get a reference `feedbackTextEl`.
+**Step 2: Write Failing Tests First**
 
-2.  **`displayScore()` function:**
-    *   Takes no arguments.
-    *   Updates `scoreDisplayEl.textContent` to `YOUR SCORE: ${currentScore}` (assuming `currentScore` is an accessible variable from `game.js`).
+**Game State Tests (add to `tests/game.test.js`):**
+*   Test: `currentScore` initializes to 0
+*   Test: `currentQuestion` initializes to null
+*   Test: `hintUsed` initializes to false
+*   Test: `guessesMade` initializes to 0
+*   Test: All state variables have correct types
+*   Test: State variables are accessible globally
 
-3.  **`renderQuestion(questionObj)` function:**
-    *   Takes a question object (as generated by `generateQuestion()`) as input.
-    *   **Clear previous content:**
-        *   `questionAreaEl.innerHTML = '';`
-        *   `optionsAreaEl.innerHTML = '';`
-    *   **Render Question:**
-        *   If `questionObj.type === 'identify_color'`:
-            *   Create a `div` for the color swatch.
-            *   Set its `backgroundColor` to `questionObj.questionDisplayValue`.
-            *   Style it: large (e.g., `width: 200px; height: 200px; border-radius: 50%; border: 2px solid black; margin: 20px auto;`).
-            *   Append it to `questionAreaEl`.
-        *   If `questionObj.type === 'identify_swatch'`:
-            *   Create a `div` or `h1` for the hex code text.
-            *   Set its `textContent` to `questionObj.questionDisplayValue`.
-            *   Style it: large font (e.g., `font-size: 3em; font-family: monospace; font-weight: bold; text-align: center; margin: 20px; text-transform: uppercase;`). Add the specified text stroke/shadow: `text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; color: #333;`.
-            *   Append it to `questionAreaEl`.
-    *   **Render Options:**
-        *   Iterate through `questionObj.options`. For each `option`:
-            *   If `questionObj.type === 'identify_color'` (options are hex codes):
-                *   Create a `button` or `div`.
-                *   Set `textContent` to `option.value` (uppercase).
-                *   Style it: clickable, padding, margin, monospace font, uppercase, same text stroke/shadow.
-                *   Store `option.isCorrect` and `option.value` on the element using `dataset` attributes.
-                *   Append to `optionsAreaEl`.
-            *   If `questionObj.type === 'identify_swatch'` (options are color swatches):
-                *   Create a `div` for the color swatch.
-                *   Set `backgroundColor` to `option.value`.
-                *   Style it: clickable, e.g., `width: 100px; height: 100px; border-radius: 50%; border: 2px solid black; margin: 10px; display: inline-block; cursor: pointer;`.
-                *   Store `option.isCorrect` and `option.value` using `dataset`.
-                *   Append to `optionsAreaEl`.
-    *   Style `optionsAreaEl` to display options horizontally and centered (`text-align: center;`).
+**DOM Element Reference Tests:**
+*   Test: All DOM element references are successfully obtained
+*   Test: Element references are not null/undefined
+*   Test: Elements have expected properties and methods
+*   Test: Error handling when elements don't exist
 
-**Testing:**
-*   Manually in `app.js` (e.g., within an `init` function or at the end of the file):
-    1.  Call `generateQuestion()` to get a sample question.
-    2.  Store it in `currentQuestion`.
-    3.  Call `renderQuestion(currentQuestion)`.
-    4.  Call `displayScore()` (score will be 0).
-*   Open `index.html` in the browser.
-*   Verify: Score "0", a question, and four options are visible. Check element inspector for `dataset` attributes.
+**`displayScore()` Function Tests:**
+*   Test: Updates scoreDisplayEl with correct format "YOUR SCORE: X"
+*   Test: Handles score of 0 correctly
+*   Test: Handles positive scores correctly
+*   Test: Handles large scores correctly
+*   Test: Handles score changes appropriately
+*   Test: No console errors during execution
+
+**`renderQuestion()` Function Tests:**
+
+**Input Validation Tests:**
+*   Test: Handles valid question objects correctly
+*   Test: Throws/handles error for null question object
+*   Test: Throws/handles error for malformed question object
+*   Test: Validates question object structure before rendering
+
+**Content Clearing Tests:**
+*   Test: Clears questionAreaEl content before rendering
+*   Test: Clears optionsAreaEl content before rendering
+*   Test: Preserves other DOM elements during clearing
+
+**Question Rendering Tests (identify_color type):**
+*   Test: Creates color swatch element with correct background color
+*   Test: Applies correct swatch styling (size, border, border-radius)
+*   Test: Swatch element is appended to questionAreaEl
+*   Test: Swatch color matches questionDisplayValue exactly
+*   Test: No extra elements created in questionAreaEl
+
+**Question Rendering Tests (identify_swatch type):**
+*   Test: Creates text element with correct hex code content
+*   Test: Text content matches questionDisplayValue exactly
+*   Test: Applies correct text styling (font-size, family, weight, transform)
+*   Test: Applies text-shadow for readability
+*   Test: Text element is appended to questionAreaEl
+*   Test: Text is uppercase
+
+**Options Rendering Tests (identify_color type):**
+*   Test: Creates 4 clickable hex code option elements
+*   Test: Each option displays correct hex code (uppercase)
+*   Test: Applies correct option styling (padding, margin, font)
+*   Test: Stores correct dataset attributes (isCorrect, value)
+*   Test: All options appended to optionsAreaEl
+*   Test: Text-shadow applied to hex code options
+
+**Options Rendering Tests (identify_swatch type):**
+*   Test: Creates 4 clickable color swatch elements
+*   Test: Each swatch has correct background color
+*   Test: Applies correct swatch styling (size, border, cursor)
+*   Test: Stores correct dataset attributes (isCorrect, value)
+*   Test: All swatches appended to optionsAreaEl
+*   Test: Swatches display inline-block and centered
+
+**Layout Tests:**
+*   Test: Options display horizontally and centered
+*   Test: Proper spacing between option elements
+*   Test: Elements don't overlap or overflow containers
+*   Test: Responsive behavior within container bounds
+
+**Dataset Attribute Tests:**
+*   Test: isCorrect dataset contains boolean values
+*   Test: value dataset contains correct hex strings
+*   Test: Dataset attributes are retrievable via JavaScript
+*   Test: Correct option has isCorrect="true"
+*   Test: Distractor options have isCorrect="false"
+
+**Step 3: Create Integration Tests**
+
+**Full Rendering Pipeline Tests:**
+*   Test: Generate question → render question → verify all elements
+*   Test: Multiple question types render correctly in sequence
+*   Test: State consistency between question generation and rendering
+*   Test: Performance with rapid re-rendering
+
+**Step 4: Implement Functions to Pass Tests**
+
+**`game.js` state variables:**
+*   Initialize all state variables with correct types and values
+*   Add ABOUTME comment describing game state management
+
+**`app.js` implementation:**
+*   Add ABOUTME comment describing UI rendering responsibilities
+*   Implement DOM element acquisition with error handling
+*   Implement `displayScore()` with proper formatting
+*   Implement `renderQuestion()` with comprehensive rendering logic
+*   Add defensive programming for edge cases
+
+**Step 5: End-to-End UI Tests**
+
+**Browser Integration Tests:**
+*   Test: Load index.html and verify no console errors
+*   Test: Generate and render sample question visually
+*   Test: Verify styling matches specification requirements
+*   Test: Inspect generated DOM elements and dataset attributes
+*   Test: Score display shows "YOUR SCORE: 0" initially
+
+**Visual Verification Tests:**
+*   Test: Color swatches render as perfect circles
+*   Test: Hex codes display with proper text stroke/shadow
+*   Test: Layout is centered and visually appealing
+*   Test: Options are clearly clickable and distinguishable
+*   Test: Consistent styling across question types
+
+**Success Criteria:**
+*   100% test pass rate
+*   No console errors in browser
+*   Visual elements match specification exactly
+*   All DOM manipulations work correctly
+*   Proper dataset attributes for future interaction
+*   Clean, maintainable code following TDD principles
 ```
 
 ---
 
-**Prompt 6: Initial Game Loop and First Question on Load** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
+**Prompt 6: Initial Game Loop and First Question on Load** &nbsp;&nbsp;&nbsp;&nbsp; Started? [x] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [x]
 
 ```text
 The UI can now render a question. Let's set up the game to load the first question automatically and prepare for handling answers.
@@ -290,7 +532,7 @@ The UI can now render a question. Let's set up the game to load the first questi
 
 ---
 
-**Prompt 7: Handling User Guesses (No Scoring Yet, Basic Feedback)** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
+**Prompt 7: Handling User Guesses (No Scoring Yet, Basic Feedback)** &nbsp;&nbsp;&nbsp;&nbsp; Started? [x] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [x]
 
 ```text
 The game starts with a question. Now let's make the options clickable and provide basic feedback.
@@ -333,89 +575,299 @@ The game starts with a question. Now let's make the options clickable and provid
 
 ---
 
-**Prompt 8: Scoring System Implementation** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
+**Prompt 8: Scoring System Implementation with TDD Test Suite** &nbsp;&nbsp;&nbsp;&nbsp; Started? [x] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [x]
 
 ```text
-We have basic guess handling. Now, let's implement the full scoring logic and update the score display.
+Following TDD principles, we'll write comprehensive tests for the scoring system BEFORE implementation.
 
-**Task:** Implement scoring in `game.js` and integrate it into `app.js`.
+**Task:** Write tests first, then implement scoring logic using TDD.
 
-**`game.js` requirements:**
+**Step 1: Write Failing Tests First**
 
-1.  **`calculateScore(guessesMadeCount, hintWasUsed)` function:**
-    *   `guessesMadeCount`: The number of guesses it took (1 for 1st try, 2 for 2nd try, etc.).
-    *   `hintWasUsed`: Boolean.
-    *   **Logic:**
-        *   `let points = 0;`
-        *   Based on `guessesMadeCount`, assign 8, 4, or 2 points. `guessesMadeCount >= 4` is 0 points.
-        *   If `hintWasUsed`, `points = Math.floor(points / 2);`.
-        *   Return `points`.
-    *   **Test this function with various inputs:** `calculateScore(1, false)` -> 8, `calculateScore(1, true)` -> 4, `calculateScore(3, true)` -> 1, `calculateScore(4, false)` -> 0.
+**Add to `tests/game.test.js`:**
 
-**`app.js` requirements:**
+**`calculateScore()` Function Tests:**
 
-1.  **Modify `handleGuess(event, chosenOptionData)`:**
-    *   When `chosenOptionData.isCorrect`:
-        1.  The number of guesses for scoring is `guessesMade`.
-        2.  `let pointsAwarded = calculateScore(guessesMade, hintUsed);`
-        3.  `currentScore += pointsAwarded;`
-        4.  Call `displayScore()`.
-        5.  `feedbackTextEl.textContent = \`CORRECT! +${pointsAwarded}\`;`
-        6.  Remove all other options from `optionsAreaEl`.
-        7.  Show the correct answer element below the question as per spec.
-    *   When `chosenOptionData.isCorrect` is `false`:
-        1.  If `guessesMade === 3`:
-            *   `feedbackTextEl.textContent = \`INCORRECT. The correct answer was ${currentQuestion.correctAnswerHex}. +0\`;`
-            *   Display the correct answer visually.
-            *   Update score (with +0) and call `displayScore()`.
-        2.  Else (1st or 2nd incorrect guess):
-            *   Update `feedbackTextEl` with the specific "TRY AGAIN..." message from the spec, showing the color/hex of the incorrect choice.
+**Basic Scoring Logic Tests:**
+*   Test: `calculateScore(1, false)` returns 8 (first guess, no hint)
+*   Test: `calculateScore(2, false)` returns 4 (second guess, no hint)
+*   Test: `calculateScore(3, false)` returns 2 (third guess, no hint)
+*   Test: `calculateScore(4, false)` returns 0 (fourth guess, no hint)
+*   Test: `calculateScore(5, false)` returns 0 (beyond fourth guess)
 
-2.  **"NEW GAME" Button Functionality:**
-    *   Add an event listener to `newGameButtonEl` to call `startNewQuestion()`.
+**Hint Impact Tests:**
+*   Test: `calculateScore(1, true)` returns 4 (first guess with hint: 8/2)
+*   Test: `calculateScore(2, true)` returns 2 (second guess with hint: 4/2)
+*   Test: `calculateScore(3, true)` returns 1 (third guess with hint: 2/2)
+*   Test: `calculateScore(4, true)` returns 0 (fourth guess with hint: 0/2)
 
-**Testing:**
-*   Test all scoring scenarios: 1st/2nd/3rd correct guess, 3 incorrect guesses.
-*   Verify "NEW GAME" works.
-*   Verify feedback messages are specific and accurate.
-*   Verify removal of incorrect options and display of the final correct answer.
+**Edge Case Tests:**
+*   Test: `calculateScore(0, false)` handles edge case appropriately
+*   Test: `calculateScore(-1, false)` handles invalid input
+*   Test: Function handles non-integer inputs
+*   Test: Function handles null/undefined inputs
+*   Test: Function returns integer values only
+
+**Type Validation Tests:**
+*   Test: First parameter must be a number
+*   Test: Second parameter must be a boolean
+*   Test: Return value is always a number
+*   Test: Return value is never negative
+
+**Add to `tests/app.test.js`:**
+
+**Score Integration Tests:**
+
+**Score Calculation Integration:**
+*   Test: Correct guess on first try updates score by 8
+*   Test: Correct guess on second try updates score by 4
+*   Test: Correct guess on third try updates score by 2
+*   Test: Three incorrect guesses add 0 to score
+*   Test: Score accumulates correctly across multiple questions
+
+**Hint Impact on Scoring:**
+*   Test: Using hint halves the awarded points
+*   Test: Hint status tracked correctly per question
+*   Test: Score display updates correctly with hint usage
+
+**Feedback Message Tests:**
+
+**Correct Answer Feedback:**
+*   Test: "CORRECT! +8" displays for first correct guess
+*   Test: "CORRECT! +4" displays for second correct guess
+*   Test: "CORRECT! +2" displays for third correct guess
+*   Test: "CORRECT! +4" displays for first correct guess with hint
+*   Test: "CORRECT! +2" displays for second correct guess with hint
+*   Test: "CORRECT! +1" displays for third correct guess with hint
+
+**Incorrect Answer Feedback:**
+*   Test: "TRY AGAIN..." message format for identify_color questions
+*   Test: "TRY AGAIN..." message format for identify_swatch questions
+*   Test: Incorrect choice color/hex displayed in feedback
+*   Test: "INCORRECT. The correct answer was..." for third wrong guess
+*   Test: "+0" displayed for failed questions
+
+**UI State Management Tests:**
+
+**Option Removal Tests:**
+*   Test: Incorrect options removed from DOM after wrong guess
+*   Test: All options except correct one removed after correct guess
+*   Test: Correct answer remains visible after correct guess
+*   Test: Option removal doesn't affect other DOM elements
+
+**Button State Tests:**
+*   Test: "NEW GAME" button appears after question completion
+*   Test: "NEW GAME" button hidden during active question
+*   Test: Clicking "NEW GAME" triggers new question
+*   Test: Button event listeners attached correctly
+
+**Visual Answer Display Tests:**
+*   Test: Correct answer displayed below question after completion
+*   Test: Visual format matches question type (swatch vs hex code)
+*   Test: Correct answer styling matches specification
+
+**Step 2: Game Flow Integration Tests**
+
+**Complete Question Cycle Tests:**
+*   Test: Full cycle from question start to completion
+*   Test: Score updates correctly throughout game cycle
+*   Test: State resets appropriately for new questions
+*   Test: UI elements transition correctly between states
+
+**Multiple Question Tests:**
+*   Test: Score accumulates across multiple questions
+*   Test: Each question starts with clean state
+*   Test: Performance remains consistent over many questions
+
+**Step 3: Implement Functions to Pass Tests**
+
+**`game.js` implementation:**
+*   Implement `calculateScore()` with exact specification logic
+*   Add proper input validation and error handling
+*   Ensure function is pure (no side effects)
+*   Add comprehensive documentation
+
+**`app.js` modifications:**
+*   Integrate scoring into `handleGuess()` function
+*   Implement correct feedback message generation
+*   Add option removal logic
+*   Implement "NEW GAME" button functionality
+*   Add visual correct answer display
+
+**Step 4: End-to-End Testing**
+
+**Complete Game Testing:**
+*   Test: Play through multiple complete questions
+*   Test: Verify scoring accuracy in real gameplay
+*   Test: Verify all feedback messages display correctly
+*   Test: Verify smooth transitions between game states
+
+**Edge Case Testing:**
+*   Test: All possible scoring scenarios in browser
+*   Test: Rapid clicking doesn't break scoring
+*   Test: UI remains responsive during all interactions
+
+**Success Criteria:**
+*   100% test pass rate
+*   All scoring scenarios work correctly
+*   Feedback messages match specification exactly
+*   UI state transitions are smooth and correct
+*   No console errors during gameplay
+*   Score accumulation works perfectly across multiple questions
 ```
 
 ---
 
-**Prompt 9: Hint System Implementation** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
+**Prompt 9: Hint System Implementation with TDD Test Suite** &nbsp;&nbsp;&nbsp;&nbsp; Started? [x] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [x]
 
 ```text
-The scoring is in. Now, let's implement the hint system. This involves UI changes for the button, visual changes for hex codes, and score adjustment.
+Following TDD principles, we'll write comprehensive tests for the hint system BEFORE implementation.
 
-**Task:** Implement the "Show Hint" button functionality and visual hint display.
+**Task:** Write tests first, then implement hint system using TDD.
 
-**`app.js` requirements:**
+**Step 1: Write Failing Tests First**
 
-1.  **`renderHexWithHint(hexString)` function:**
-    *   Input: `hexString` (e.g., "#AABBCC").
-    *   Output: An HTML string that colors the R, G, and B components of the hex.
-    *   Example for `#AABBCC`: returns `<span>#</span><span style="color:#AA0000;">AA</span><span style="color:#00BB00;">BB</span><span style="color:#0000CC;">CC</span>`.
-    *   Ensure the standard black text-stroke/shadow from the spec is still applied to these colored spans (e.g., via a class).
+**Add to `tests/app.test.js`:**
 
-2.  **`handleHintClick()` function:**
-    *   Add an event listener on `hintButtonEl` to call this.
-    *   If `hintUsed` or `questionOver` is true, return.
-    *   Set `hintUsed = true;`.
-    *   Update `hintButtonEl` text to "Hint Shown" and disable it.
-    *   **Apply Visual Hint:**
-        *   If `currentQuestion.type === 'identify_color'`, iterate through option elements and update their `innerHTML` using `renderHexWithHint`.
-        *   If `currentQuestion.type === 'identify_swatch'`, update the `innerHTML` of the main question element using `renderHexWithHint`.
+**`renderHexWithHint()` Function Tests:**
 
-3.  **Modify `startNewQuestion()`:**
-    *   Reset `hintUsed` to `false`.
-    *   Reset `hintButtonEl` to "Show Hint" and enable it.
+**Basic Functionality Tests:**
+*   Test: `renderHexWithHint("#AABBCC")` returns correctly colored HTML
+*   Test: Output contains `<span>#</span>` for hash symbol
+*   Test: R component "AA" colored with `#AA0000`
+*   Test: G component "BB" colored with `#00BB00`
+*   Test: B component "CC" colored with `#0000CC`
+*   Test: Function preserves text-stroke/shadow classes
+*   Test: Output is valid HTML string
 
-**Testing:**
-*   Click "Show Hint": button state changes, visual hint appears correctly for both question types.
-*   Answer correctly after using hint. Verify score is halved.
-*   Start a new game. Verify hint button and state are reset.
-*   Verify hint persists for the duration of one question, even after incorrect guesses.
+**Input Validation Tests:**
+*   Test: Handles hex codes with # prefix correctly
+*   Test: Handles hex codes without # prefix correctly
+*   Test: Handles lowercase hex codes correctly
+*   Test: Handles uppercase hex codes correctly
+*   Test: Handles edge cases like "#000000" and "#FFFFFF"
+*   Test: Throws/handles error for invalid hex codes
+*   Test: Handles malformed input gracefully
+
+**HTML Structure Tests:**
+*   Test: Output contains exactly 4 span elements
+*   Test: Each component span has correct inline color style
+*   Test: CSS classes are preserved in output
+*   Test: No XSS vulnerabilities in generated HTML
+*   Test: Generated HTML is safe for innerHTML injection
+
+**`handleHintClick()` Function Tests:**
+
+**State Management Tests:**
+*   Test: Sets `hintUsed` to true when clicked
+*   Test: Updates button text to "Hint Shown"
+*   Test: Disables hint button after click
+*   Test: Does nothing if `hintUsed` is already true
+*   Test: Does nothing if `questionOver` is true
+*   Test: Event listener attached correctly to button
+
+**Visual Hint Application Tests:**
+
+**identify_color Question Type:**
+*   Test: Updates all hex code option elements with colored hints
+*   Test: Each option element innerHTML contains colored spans
+*   Test: Original text content is preserved but colored
+*   Test: Text-stroke/shadow styling remains intact
+*   Test: Option functionality (click handlers) still works
+
+**identify_swatch Question Type:**
+*   Test: Updates main question hex code with colored hints
+*   Test: Question element innerHTML contains colored spans
+*   Test: Original hex code is preserved but colored
+*   Test: Question styling (size, positioning) remains correct
+
+**Hint Persistence Tests:**
+*   Test: Hint remains visible after incorrect guesses
+*   Test: Hint persists until question completion
+*   Test: Hint state doesn't affect option removal
+*   Test: Colored hint remains after DOM manipulations
+
+**Button State Tests:**
+*   Test: Button text changes from "Show Hint" to "Hint Shown"
+*   Test: Button becomes unclickable (disabled) after use
+*   Test: Button styling reflects disabled state
+*   Test: Multiple clicks don't change state further
+
+**Score Impact Integration Tests:**
+*   Test: Using hint before correct guess halves score
+*   Test: Hint status correctly passed to `calculateScore()`
+*   Test: Score calculation integrates hint usage properly
+*   Test: Feedback message reflects hint-adjusted score
+
+**Question Lifecycle Integration Tests:**
+
+**New Question Reset Tests:**
+*   Test: `startNewQuestion()` resets `hintUsed` to false
+*   Test: Hint button text resets to "Show Hint"
+*   Test: Hint button becomes enabled again
+*   Test: Previous question's hint styling is cleared
+*   Test: New question renders without hint initially
+
+**Full Hint Cycle Tests:**
+*   Test: Complete cycle: new question → show hint → answer → new question
+*   Test: Hint state isolation between questions
+*   Test: No hint state leakage between questions
+*   Test: Proper cleanup of hint-related DOM modifications
+
+**Step 2: Cross-Question Type Testing**
+
+**Consistency Tests:**
+*   Test: Hint works identically for both question types
+*   Test: Color accuracy consistent across all hex codes
+*   Test: Performance similar for both question types
+*   Test: UI behavior consistent regardless of question type
+
+**Visual Validation Tests:**
+*   Test: Red component colors display as red tones
+*   Test: Green component colors display as green tones
+*   Test: Blue component colors display as blue tones
+*   Test: Color intensity matches hex component values
+*   Test: Hint colors are visually distinguishable
+
+**Step 3: Implement Functions to Pass Tests**
+
+**`app.js` implementation:**
+*   Implement `renderHexWithHint()` with proper HTML generation
+*   Add XSS protection and input validation
+*   Implement `handleHintClick()` with state management
+*   Modify `startNewQuestion()` to reset hint state
+*   Add proper event listener management
+*   Ensure all DOM manipulations are safe and efficient
+
+**Step 4: Integration and End-to-End Testing**
+
+**Browser Testing:**
+*   Test: Visual hint appears correctly in browser
+*   Test: Colored text is readable with text-stroke
+*   Test: Button interactions work smoothly
+*   Test: Hint integration with scoring works correctly
+*   Test: Multiple hint uses across questions work properly
+
+**Performance Testing:**
+*   Test: Hint rendering doesn't cause performance issues
+*   Test: DOM manipulation efficiency
+*   Test: Memory usage during hint operations
+*   Test: No memory leaks from repeated hint usage
+
+**Accessibility Testing:**
+*   Test: Hint button remains accessible after state changes
+*   Test: Colored text maintains sufficient contrast
+*   Test: Screen reader compatibility with colored spans
+*   Test: Keyboard navigation works with hint system
+
+**Success Criteria:**
+*   100% test pass rate
+*   Visual hints display correctly for both question types
+*   Score halving works correctly with hint usage
+*   Button state management is flawless
+*   Hint state properly isolated between questions
+*   No console errors or warnings
+*   All DOM manipulations are safe and efficient
 ```
 
 ---
@@ -450,34 +902,217 @@ The core mechanics and hint system are working. Let's apply the final styling to
 
 ---
 
-**Prompt 11: Finalizing Feedback Details & Logging** &nbsp;&nbsp;&nbsp;&nbsp; Started? [ ] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [ ]
+**Prompt 11: Final Testing, Feedback Messages & Comprehensive Test Suite** &nbsp;&nbsp;&nbsp;&nbsp; Started? [x] &nbsp;&nbsp;&nbsp;&nbsp; Finished? [x]
 
 ```text
-We're almost there! Let's ensure all feedback messages are exactly as specified and add some basic logging for debugging.
+Following TDD principles, we'll write comprehensive end-to-end tests and finalize all feedback messaging.
 
-**Task:** Refine feedback messages in `app.js` and add console logging.
+**Task:** Create comprehensive final test suite covering all requirements from spec.md.
 
-**`app.js` requirements:**
+**Step 1: Complete Feedback Message Test Suite**
 
-1.  **Review and Refine `handleGuess` for feedback messages:**
-    *   **On Incorrect Guess:**
-        *   For `identify_color`: "TRY AGAIN. THAT HEX CODE WAS [actual color swatch of the hex they picked]". Implement this using `innerHTML` to create a small inline swatch.
-        *   For `identify_swatch`: "TRY AGAIN. THAT COLOR WAS #[hex code of the swatch they picked]". Implement with `innerHTML` to color the hex code text.
-    *   **On Correct Guess:** Ensure feedback is "CORRECT! +[Score]".
-    *   **On Third Incorrect Guess:** Ensure feedback is "INCORRECT. The correct answer was [correct answer]. +0".
-    *   Ensure the correct answer (hex or swatch) is displayed clearly after the question is resolved (either correctly or by 3 incorrect guesses).
+**Add to `tests/app.test.js`:**
 
-2.  **Initial Instructional Text (in `startNewQuestion()`):**
-    *   Update to match spec exactly: "GUESS THE COLOR" or "CHOOSE THE HEX CODE".
+**Feedback Message Format Tests:**
 
-**`game.js` & `app.js` - Logging:**
-1.  In `game.js`, `generateQuestionOptions()`: `console.warn()` if the regeneration loop runs many times.
-2.  In `app.js`, `startNewQuestion()`: `console.log("New question:", currentQuestion);`.
-3.  In `app.js`, `initGame()`: `console.log("HexVex initialized");`.
+**Incorrect Guess Feedback (identify_color type):**
+*   Test: Message format "TRY AGAIN. THAT HEX CODE WAS [swatch]"
+*   Test: Inline color swatch matches the incorrect hex picked
+*   Test: Swatch styling consistent with other swatches
+*   Test: Message HTML structure is correct and safe
+*   Test: Swatch color accuracy matches picked hex exactly
 
-**Testing:**
-*   Thoroughly test all feedback scenarios to ensure the text and visual aids (inline swatches/colored text) are exactly as specified.
-*   Verify initial instructional texts are correct.
-*   Check the browser console for logs during gameplay.
-*   Play several rounds to confirm the final product is stable and matches the spec.
+**Incorrect Guess Feedback (identify_swatch type):**
+*   Test: Message format "TRY AGAIN. THAT COLOR WAS #[hex]"
+*   Test: Hex code in message matches the incorrect swatch picked
+*   Test: Hex code text is colored with its actual color
+*   Test: Colored hex maintains text-stroke/shadow for readability
+*   Test: Hex code is displayed in uppercase
+
+**Correct Guess Feedback:**
+*   Test: Message format "CORRECT! +[Score]"
+*   Test: Score value matches calculated score exactly
+*   Test: Message displays immediately upon correct guess
+*   Test: No extra spaces or formatting issues
+
+**Final Incorrect Guess Feedback:**
+*   Test: Message format "INCORRECT. The correct answer was [answer]. +0"
+*   Test: Correct answer display matches question type
+*   Test: For identify_color: shows correct hex code
+*   Test: For identify_swatch: shows correct color swatch
+*   Test: "+0" score indication is clear
+
+**Instructional Text Tests:**
+*   Test: identify_color questions show "GUESS THE COLOR"
+*   Test: identify_swatch questions show "CHOOSE THE HEX CODE"
+*   Test: Instructions display at start of each question
+*   Test: Instructions clear/update between questions
+
+**Step 2: Comprehensive End-to-End Test Suite**
+
+**Create `tests/e2e.test.js`:**
+
+**Complete Game Flow Tests:**
+*   Test: Load page → first question appears → all elements visible
+*   Test: Complete question correctly → score updates → new game loads
+*   Test: Complete question incorrectly → appropriate feedback → new game loads
+*   Test: Use hint → score adjustment → complete question
+*   Test: Multiple questions in sequence work correctly
+
+**All Scoring Scenarios:**
+*   Test: First guess correct (no hint): +8 points
+*   Test: Second guess correct (no hint): +4 points
+*   Test: Third guess correct (no hint): +2 points
+*   Test: First guess correct (with hint): +4 points
+*   Test: Second guess correct (with hint): +2 points
+*   Test: Third guess correct (with hint): +1 point
+*   Test: Three incorrect guesses: +0 points
+
+**Color Distinctness Validation:**
+*   Test: Generate 100 questions, verify all color distances >= 75
+*   Test: No visually similar colors appear in same question
+*   Test: Color generation performs consistently
+
+**UI/UX Requirements from Spec:**
+*   Test: White background (#FFFFFF)
+*   Test: Score displays in top-right corner
+*   Test: Large circular color swatches
+*   Test: Uppercase hex codes with text-stroke
+*   Test: Minimalist design requirements
+*   Test: Proper element positioning and layout
+
+**Step 3: Performance and Stress Testing**
+
+**Add to `tests/performance.test.js`:**
+
+**Performance Tests:**
+*   Test: Generate 1000 questions in reasonable time (< 10 seconds)
+*   Test: Color distance calculation efficiency
+*   Test: DOM manipulation performance during gameplay
+*   Test: Memory usage doesn't grow excessively
+*   Test: No memory leaks over extended gameplay
+
+**Stress Tests:**
+*   Test: Rapid clicking doesn't break game state
+*   Test: Rapid new game generation works correctly
+*   Test: Extended gameplay (100+ questions) remains stable
+*   Test: Browser doesn't slow down or crash
+
+**Step 4: Logging and Debugging Test Suite**
+
+**Logging Tests:**
+*   Test: `console.log("HexVex initialized")` appears on page load
+*   Test: `console.log("New question:", currentQuestion)` for each question
+*   Test: `console.warn()` appears for excessive regeneration attempts
+*   Test: No unexpected console errors or warnings
+*   Test: Logging doesn't impact game performance
+
+**Error Handling Tests:**
+*   Test: Graceful handling of missing DOM elements
+*   Test: Invalid color generation handled properly
+*   Test: Malformed questions handled without crashing
+*   Test: Network issues don't break local functionality
+
+**Step 5: Specification Compliance Tests**
+
+**Create `tests/spec-compliance.test.js`:**
+
+**Technical Specification Tests:**
+*   Test: Pure HTML/CSS/JavaScript (no frameworks)
+*   Test: Desktop-first design (responsive not required for MVP)
+*   Test: All color calculations match spec formula exactly
+*   Test: Question types appear randomly (50/50 distribution)
+*   Test: Option order properly randomized
+
+**Feature Completeness Tests:**
+*   Test: Infinite gameplay loop works
+*   Test: No "Start Quiz" button (auto-start)
+*   Test: Two question types implemented correctly
+*   Test: Hint system fully functional
+*   Test: Scoring system matches specification exactly
+*   Test: All feedback messages match specification
+
+**Visual Design Compliance:**
+*   Test: Color swatches are perfect circles
+*   Test: Hex codes always uppercase
+*   Test: Text-stroke/shadow applied correctly
+*   Test: Layout matches specification description
+*   Test: Minimalist design principles followed
+
+**Step 6: Final Implementation and Polish**
+
+**Complete Implementation:**
+*   Finalize all feedback message formatting
+*   Add comprehensive logging as specified
+*   Ensure all visual elements match specification
+*   Complete error handling for edge cases
+
+**Final Testing Protocol:**
+*   Run all unit tests: 100% pass rate required
+*   Run all integration tests: 100% pass rate required
+*   Run all end-to-end tests: 100% pass rate required
+*   Manual testing: Play 20+ questions, verify all features
+*   Browser testing: No console errors, warnings, or crashes
+*   Specification review: All requirements met exactly
+
+**Success Criteria:**
+*   All tests pass with pristine output
+*   Game matches specification exactly
+*   Performance is smooth and responsive
+*   No bugs or edge case failures
+*   Code is clean, maintainable, and well-tested
+*   Ready for production deployment
 ```
+
+---
+
+## Comprehensive Testing Strategy Summary
+
+This plan implements **Test-Driven Development (TDD)** throughout the entire project, ensuring:
+
+### Test Coverage Requirements (NO EXCEPTIONS)
+- **Unit Tests**: Every function has comprehensive unit test coverage
+- **Integration Tests**: All module interactions are tested
+- **End-to-End Tests**: Complete user workflows are validated
+
+### Testing Framework Structure
+```
+tests/
+├── test-runner.html         # Browser-based test execution
+├── utils.test.js           # Color utility function tests
+├── game.test.js            # Game logic and state tests  
+├── app.test.js             # UI rendering and interaction tests
+├── e2e.test.js             # Complete game flow tests
+├── performance.test.js     # Performance and stress tests
+└── spec-compliance.test.js # Specification requirement validation
+```
+
+### TDD Implementation Process (Applied to Each Prompt)
+1. **Red Phase**: Write failing tests that define desired behavior
+2. **Green Phase**: Write minimal code to make tests pass
+3. **Refactor Phase**: Improve code while maintaining test success
+4. **Validation Phase**: Ensure all requirements met
+
+### Critical Test Categories
+- **Color Distance Algorithm**: Exact formula validation (|R1-R2| + |G1-G2| + |B1-B2|)
+- **Color Distinctness**: All pairs >= 75 distance threshold
+- **Scoring Logic**: All 8 scoring scenarios (with/without hints)
+- **Randomization**: Statistical validation of distributions
+- **UI Rendering**: Visual element accuracy and DOM manipulation
+- **Game State**: Proper state transitions and isolation
+- **Error Handling**: Graceful failure modes and edge cases
+
+### Success Criteria for Each Prompt
+- **100% test pass rate** (pristine test output required)
+- **No console errors or warnings**
+- **Specification compliance validation**
+- **Performance within defined bounds**
+- **Code maintainability and readability**
+
+### Testing Commands
+- Open `tests/test-runner.html` in browser
+- All tests must pass with green indicators
+- Console output must be clean and informative
+- Failed tests must show clear expected vs actual comparisons
+
+This testing approach ensures that any AI implementing these prompts will create **well-tested, robust, maintainable code** that fully meets the HexVex specification requirements.

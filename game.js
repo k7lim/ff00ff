@@ -95,9 +95,13 @@ function generateQuestionOptions() {
         
     } while (!isDistinctSet);
     
-    // Log successful generation info
+    // Log successful generation info and warn if excessive attempts
     if (regenerationAttempts > 1) {
         console.log(`Generated distinct color set after ${regenerationAttempts} attempts`);
+    }
+    
+    if (regenerationAttempts >= 90) {
+        console.warn(`Excessive color generation attempts: ${regenerationAttempts}. Consider adjusting MIN_DISTANCE_THRESHOLD.`);
     }
     
     return {

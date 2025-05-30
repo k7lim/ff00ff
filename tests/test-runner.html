@@ -5,21 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HexVex Test Runner</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #FFFFFF; }
         .test-results { margin: 20px 0; }
         .pass { color: green; }
         .fail { color: red; }
         .test-section { margin: 20px 0; border: 1px solid #ccc; padding: 15px; }
         .test-summary { font-weight: bold; font-size: 18px; margin-bottom: 10px; }
+        
+        /* Required styles for tests */
+        #options-area { text-align: center; max-width: 600px; }
+        #question-area { padding: 25px; }
+        #score-display { position: absolute; top: 10px; right: 10px; }
+        .color-swatch { width: 100px; height: 100px; border: 2px solid #000; border-radius: 10px; }
+        .hex-code-text { font-family: monospace; }
+        .hex-option-button { margin: 10px; padding: 10px; }
+        .option-swatch { width: 60px; height: 60px; border: 1px solid #000; border-radius: 50%; }
     </style>
 </head>
 <body>
     <h1>HexVex Test Suite</h1>
     <div id="test-results"></div>
+    
+    <!-- DOM elements required for testing -->
+    <div id="score-display" style="display: none;">YOUR SCORE: 0</div>
+    <div id="question-area" style="display: none;"></div>
+    <div id="options-area" style="display: none;"></div>
+    <div id="feedback-area" style="display: none;">
+        <button id="hint-button">Show Hint</button>
+        <button id="new-game-button" style="display: none;">NEW GAME</button>
+    </div>
 
     <!-- Load source files -->
     <script src="../utils.js"></script>
     <script src="../game.js"></script>
+    <script src="../app.js"></script>
 
     <!-- Simple test framework -->
     <script>
@@ -95,8 +114,61 @@
     <script src="utils.test.js"></script>
     <script src="game.test.js"></script>
     <script src="app.test.js"></script>
+    <script src="e2e.test.js"></script>
+    <script src="performance.test.js"></script>
+    <script src="spec-compliance.test.js"></script>
 
     <script>
+        // Initialize the app for testing
+        try {
+            initApp();
+            console.log('✓ App initialized for testing');
+        } catch (error) {
+            console.warn('App initialization failed, some tests may not work:', error.message);
+        }
+        
+        // Run all test suites
+        console.log('\n🚀 Starting Comprehensive Test Suite...\n');
+        
+        // Track overall results
+        let allTestsPassed = true;
+        
+        // Run unit tests
+        if (typeof runAllUtilsTests === 'function') {
+            allTestsPassed = runAllUtilsTests() && allTestsPassed;
+        }
+        
+        if (typeof runAllGameTests === 'function') {
+            allTestsPassed = runAllGameTests() && allTestsPassed;
+        }
+        
+        if (typeof runAllAppTests === 'function') {
+            allTestsPassed = runAllAppTests() && allTestsPassed;
+        }
+        
+        // Run comprehensive test suites
+        if (typeof runAllE2ETests === 'function') {
+            allTestsPassed = runAllE2ETests() && allTestsPassed;
+        }
+        
+        if (typeof runAllPerformanceTests === 'function') {
+            allTestsPassed = runAllPerformanceTests() && allTestsPassed;
+        }
+        
+        if (typeof runAllSpecComplianceTests === 'function') {
+            allTestsPassed = runAllSpecComplianceTests() && allTestsPassed;
+        }
+        
+        // Display final results
+        console.log('\n=== FINAL TEST RESULTS ===');
+        if (allTestsPassed) {
+            console.log('🎉 ALL TESTS PASSED! Game is ready for production.');
+            document.body.style.backgroundColor = '#e8f5e8';
+        } else {
+            console.log('❌ Some tests failed. Please review the output above.');
+            document.body.style.backgroundColor = '#ffe8e8';
+        }
+        
         // Display results after all tests run
         testRunner.displayResults();
     </script>

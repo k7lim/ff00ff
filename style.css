@@ -9,6 +9,164 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #FFFFFF;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* Score display - positioned top-right */
+#score-display {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    font-weight: bold;
+    font-size: 18px;
+    background-color: #f8f8f8;
+    border: 2px solid #333;
+    border-radius: 8px;
+    color: #333;
+}
+
+/* Main content areas - centered layout */
+#question-area {
+    padding: 40px 20px;
+    margin: 100px auto 30px auto;
+    text-align: center;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#options-area {
+    padding: 20px;
+    margin: 20px auto;
+    min-height: 150px;
+    max-width: 800px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+#feedback-area {
+    padding: 30px 20px;
+    margin: 30px auto;
+    text-align: center;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#feedback-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Hex code text styling with prominent monospace font and text-stroke */
+.hex-code-text {
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    color: #333;
+}
+
+/* Color swatch styling */
+.color-swatch {
+    border-radius: 50%;
+    border: 2px solid #000;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.color-swatch:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Main question swatch (large) */
+.color-swatch.main-swatch {
+    width: 200px;
+    height: 200px;
+    border: 3px solid #000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Option swatches (smaller) */
+.color-swatch.option-swatch {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+}
+
+/* Hex code option buttons */
+.hex-option-button {
+    padding: 12px 20px;
+    margin: 5px;
+    font-size: 18px;
+    border: 2px solid #333;
+    background-color: #fff;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.1s ease;
+    min-width: 120px;
+}
+
+.hex-option-button:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Button styling for hint and new game buttons */
+button {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #333;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Disabled button styling */
+button:disabled {
+    background-color: #e0e0e0;
+    color: #999;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    border-color: #ccc;
+}
+
+button:disabled:hover {
+    background-color: #e0e0e0;
+    transform: none;
+    box-shadow: none;
 }
 
 /* Initially hide the new game button */
@@ -16,49 +174,42 @@ body {
     display: none;
 }
 
-/* Layout styling */
-#score-display {
-    padding: 10px;
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-weight: bold;
-    font-size: 18px;
+/* Large hex code display for identify_swatch questions */
+.large-hex-display {
+    font-size: 4em;
+    margin: 20px 0;
+    letter-spacing: 2px;
 }
 
-#question-area {
-    padding: 20px;
-    margin: 80px auto 20px auto;
-    text-align: center;
-    min-height: 200px;
-    width: 400px;
-}
-
-#options-area {
-    padding: 20px;
-    margin: 20px auto;
-    text-align: center;
-    min-height: 150px;
-    width: 600px;
-}
-
-#feedback-area {
-    padding: 20px;
-    margin: 20px auto;
-    text-align: center;
-    width: 400px;
-}
-
-#feedback-text {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #333;
-}
-
-/* Hex code text styling with text-stroke for readability */
-.hex-code-text {
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-    font-family: monospace;
-    font-weight: bold;
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    #question-area {
+        margin: 80px auto 20px auto;
+        padding: 20px 10px;
+    }
+    
+    #options-area {
+        max-width: 90%;
+        gap: 10px;
+    }
+    
+    .color-swatch.main-swatch {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .color-swatch.option-swatch {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .large-hex-display {
+        font-size: 3em;
+    }
+    
+    #score-display {
+        top: 10px;
+        right: 10px;
+        font-size: 16px;
+    }
 }
