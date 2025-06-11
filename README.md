@@ -2,6 +2,11 @@
 
 A web-based hex color quiz game that challenges your color knowledge through interactive gameplay. Test your ability to identify hex color codes and their corresponding color swatches in this infinite quiz experience.
 
+## Screenshots
+<img width="699" alt="image" src="https://github.com/user-attachments/assets/f1b41d57-d3a7-41de-ac18-0e12871a6475" />
+<img width="545" alt="image" src="https://github.com/user-attachments/assets/d851d7d0-e3dd-4ba6-a3c3-c1bde1f96890" />
+
+
 ## 🎮 Game Overview
 
 HexVex presents an endless series of color identification challenges with two alternating question types:
