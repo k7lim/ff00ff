@@ -181,6 +181,32 @@ button:disabled:hover {
     letter-spacing: 2px;
 }
 
+/* RGB component styling for hints */
+.rgb-component {
+    display: inline-block;
+    padding: 2px 4px;
+    border-radius: 3px;
+    margin: 0 1px;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.8), 0 0 6px rgba(255, 255, 255, 0.6);
+    font-weight: bold;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.rgb-component.red-bg {
+    background-color: var(--red-color);
+    color: white;
+}
+
+.rgb-component.green-bg {
+    background-color: var(--green-color);
+    color: white;
+}
+
+.rgb-component.blue-bg {
+    background-color: var(--blue-color);
+    color: white;
+}
+
 /* Responsive design for smaller screens */
 @media (max-width: 768px) {
     #question-area {

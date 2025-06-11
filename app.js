@@ -204,11 +204,7 @@ function renderQuestion(questionObj) {
             optionButton.className = 'hex-option-button';
             optionButton.textContent = option.value.toUpperCase();
             
-            // Store data attributes
-            optionButton.dataset.isCorrect = option.isCorrect.toString();
-            optionButton.dataset.value = option.value;
-            
-            // Add click event listener
+            // Add click event listener (option data passed via closure)
             optionButton.addEventListener('click', (event) => handleGuess(event, option));
             
             optionsAreaEl.appendChild(optionButton);
@@ -218,11 +214,7 @@ function renderQuestion(questionObj) {
             optionSwatch.className = 'color-swatch option-swatch';
             optionSwatch.style.backgroundColor = option.value;
             
-            // Store data attributes
-            optionSwatch.dataset.isCorrect = option.isCorrect.toString();
-            optionSwatch.dataset.value = option.value;
-            
-            // Add click event listener
+            // Add click event listener (option data passed via closure)
             optionSwatch.addEventListener('click', (event) => handleGuess(event, option));
             
             optionsAreaEl.appendChild(optionSwatch);
@@ -255,8 +247,11 @@ function handleGuess(event, chosenOptionData) {
     // Get the clicked element
     const clickedElement = event.currentTarget;
     
+    // Determine if guess is correct by comparing with the correct answer
+    const isCorrect = chosenOptionData.value.toLowerCase() === gameState.currentQuestion.correctAnswerHex.toLowerCase();
+    
     // Handle correct guess
-    if (chosenOptionData.isCorrect) {
+    if (isCorrect) {
         // Calculate points awarded for this question
         const pointsAwarded = calculateScore(gameState.guessesMade, gameState.hintUsed);
         
@@ -279,7 +274,7 @@ function handleGuess(event, chosenOptionData) {
         // Remove all other incorrect options to show final state
         const allOptions = Array.from(optionsAreaEl.children);
         allOptions.forEach(option => {
-            if (option !== clickedElement && option.dataset.isCorrect === 'false') {
+            if (option !== clickedElement) {
                 option.remove();
             }
         });
@@ -312,6 +307,40 @@ function handleGuess(event, chosenOptionData) {
             
             // Update score (with +0) and display
             displayScore();
+            
+            // Remove the 3rd incorrect guess (clicked element) and show only correct answer
+            clickedElement.remove();
+            
+            // Remove all remaining incorrect options, leaving only the correct answer
+            const allOptions = Array.from(optionsAreaEl.children);
+            allOptions.forEach(option => {
+                // For identify_swatch, check background color; for identify_color, check text content
+                let isCorrectOption = false;
+                if (gameState.currentQuestion.type === 'identify_swatch') {
+                    // Compare background colors (normalize to lowercase hex)
+                    const optionBgColor = option.style.backgroundColor;
+                    if (optionBgColor) {
+                        // Convert rgb() to hex for comparison
+                        const rgbMatch = optionBgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+                        if (rgbMatch) {
+                            const hex = '#' + [rgbMatch[1], rgbMatch[2], rgbMatch[3]]
+                                .map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
+                            isCorrectOption = hex.toLowerCase() === gameState.currentQuestion.correctAnswerHex.toLowerCase();
+                        }
+                    }
+                } else if (gameState.currentQuestion.type === 'identify_color') {
+                    // Compare text content
+                    isCorrectOption = option.textContent && 
+                        option.textContent.toLowerCase() === gameState.currentQuestion.correctAnswerHex.toLowerCase();
+                }
+                
+                if (!isCorrectOption) {
+                    option.remove();
+                }
+            });
+            
+            // Disable hint button
+            hintButtonEl.disabled = true;
             
             // Show new game button
             newGameButtonEl.style.display = 'inline-block';
@@ -346,9 +375,9 @@ function handleGuess(event, chosenOptionData) {
 }
 
 /**
- * Renders a hex code with colored R, G, B components for hint display
+ * Renders a hex code with colored R, G, B component backgrounds for hint display
  * @param {string} hexString - Hex color string (e.g., "#AABBCC")
- * @returns {string} HTML string with colored components
+ * @returns {string} HTML string with background-colored components
  */
 function renderHexWithHint(hexString) {
     // Input validation
@@ -370,8 +399,13 @@ function renderHexWithHint(hexString) {
     const gComponent = hex.slice(2, 4);
     const bComponent = hex.slice(4, 6);
     
-    // Create colored HTML with text-stroke class
-    const html = `<span>#</span><span class="hex-code-text" style="color:#${rComponent}0000;">${rComponent}</span><span class="hex-code-text" style="color:#00${gComponent}00;">${gComponent}</span><span class="hex-code-text" style="color:#0000${bComponent};">${bComponent}</span>`;
+    // Convert hex components to RGB colors for backgrounds
+    const redColor = `#${rComponent}0000`;
+    const greenColor = `#00${gComponent}00`;
+    const blueColor = `#0000${bComponent}`;
+    
+    // Create HTML with background-colored components
+    const html = `<span class="hex-code-text rgb-component" style="background-color: #333; color: white;">#</span><span class="hex-code-text rgb-component red-bg" style="--red-color: ${redColor};">${rComponent}</span><span class="hex-code-text rgb-component green-bg" style="--green-color: ${greenColor};">${gComponent}</span><span class="hex-code-text rgb-component blue-bg" style="--blue-color: ${blueColor};">${bComponent}</span>`;
     
     return html;
 }
@@ -430,7 +464,7 @@ function handleHintClick() {
         // Update hex code options with colored hints
         const optionElements = Array.from(optionsAreaEl.children);
         optionElements.forEach(element => {
-            const hexValue = element.dataset.value || element.textContent;
+            const hexValue = element.textContent;
             if (hexValue && hexValue.startsWith('#')) {
                 try {
                     element.innerHTML = renderHexWithHint(hexValue);
@@ -496,9 +530,9 @@ function startNewQuestion() {
     // Update feedback text with instructional text based on question type
     if (feedbackTextEl) {
         if (gameState.currentQuestion.type === 'identify_color') {
-            feedbackTextEl.textContent = "GUESS THE COLOR";
-        } else if (gameState.currentQuestion.type === 'identify_swatch') {
             feedbackTextEl.textContent = "CHOOSE THE HEX CODE";
+        } else if (gameState.currentQuestion.type === 'identify_swatch') {
+            feedbackTextEl.textContent = "PICK THE COLOR";
         }
     }
     
