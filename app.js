@@ -5,7 +5,7 @@
  * DOM Element References
  * Get and store references to all required DOM elements
  */
-let scoreDisplayEl, questionAreaEl, optionsAreaEl, feedbackAreaEl, hintButtonEl, newGameButtonEl, feedbackTextEl;
+let scoreDisplayEl, questionAreaEl, optionsAreaEl, feedbackAreaEl, hintButtonEl, newGameButtonEl, feedbackTextEl, fontSelectEl;
 
 /**
  * Get access to global game state variables
@@ -78,9 +78,10 @@ function initializeDOMElements() {
     feedbackAreaEl = document.getElementById('feedback-area');
     hintButtonEl = document.getElementById('hint-button');
     newGameButtonEl = document.getElementById('new-game-button');
+    fontSelectEl = document.getElementById('font-select');
     
     // Validate that all required elements exist
-    if (!scoreDisplayEl || !questionAreaEl || !optionsAreaEl || !feedbackAreaEl || !hintButtonEl || !newGameButtonEl) {
+    if (!scoreDisplayEl || !questionAreaEl || !optionsAreaEl || !feedbackAreaEl || !hintButtonEl || !newGameButtonEl || !fontSelectEl) {
         throw new Error('Required DOM elements not found. Please check that index.html has all required elements.');
     }
     
@@ -122,6 +123,15 @@ function initializeDOMElements() {
             handleHintClick();
         });
         hintButtonEl.setAttribute('data-listener-added', 'true');
+    }
+    
+    // Add event listener to font selector (only if not already added)
+    if (!fontSelectEl.hasAttribute('data-listener-added')) {
+        fontSelectEl.addEventListener('change', () => {
+            console.log('Font changed to:', fontSelectEl.value);
+            handleFontChange();
+        });
+        fontSelectEl.setAttribute('data-listener-added', 'true');
     }
 }
 
@@ -494,6 +504,26 @@ function handleHintClick() {
     }
     
     console.log('Hint applied for question type:', gameState.currentQuestion.type);
+}
+
+/**
+ * Handles font selection change
+ * Applies the selected font to the body element
+ */
+function handleFontChange() {
+    const selectedFont = fontSelectEl.value;
+    
+    // Remove existing font classes
+    document.body.classList.remove('rubik-font', 'caveat-font');
+    
+    // Apply selected font class
+    if (selectedFont === 'rubik') {
+        document.body.classList.add('rubik-font');
+    } else if (selectedFont === 'caveat') {
+        document.body.classList.add('caveat-font');
+    }
+    
+    console.log('Font changed to:', selectedFont);
 }
 
 /**

@@ -239,3 +239,98 @@ button:disabled:hover {
         font-size: 16px;
     }
 }
+
+/* Font switcher - positioned discretely in bottom left */
+#font-switcher {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: rgba(248, 248, 248, 0.9);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    color: #666;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#font-switcher label {
+    font-weight: bold;
+    margin: 0;
+}
+
+#font-select {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#font-select:focus {
+    outline: 2px solid #333;
+    outline-offset: 1px;
+}
+
+/* Font variations */
+body.rubik-font {
+    font-family: 'Rubik Wet Paint', cursive;
+}
+
+body.rubik-font .hex-code-text {
+    font-family: 'Rubik Wet Paint', cursive;
+}
+
+/* Keep score display readable with Rubik font */
+body.rubik-font #score-display {
+    font-family: 'Rubik Wet Paint', cursive;
+    font-size: 16px;
+}
+
+body.rubik-font #feedback-text {
+    font-family: 'Rubik Wet Paint', cursive;
+}
+
+/* Buttons with Rubik font */
+body.rubik-font button {
+    font-family: 'Rubik Wet Paint', cursive;
+}
+
+body.rubik-font .hex-option-button {
+    font-family: 'Rubik Wet Paint', cursive;
+}
+
+/* Caveat font styles */
+body.caveat-font {
+    font-family: 'Caveat', cursive;
+}
+
+body.caveat-font .hex-code-text {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+}
+
+body.caveat-font #score-display {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+body.caveat-font #feedback-text {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+}
+
+body.caveat-font button {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+}
+
+body.caveat-font .hex-option-button {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+}
