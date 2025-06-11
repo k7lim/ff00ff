@@ -5,7 +5,7 @@
  * DOM Element References
  * Get and store references to all required DOM elements
  */
-let scoreDisplayEl, questionAreaEl, optionsAreaEl, feedbackAreaEl, hintButtonEl, newGameButtonEl, feedbackTextEl, fontSelectEl;
+let scoreDisplayEl, questionAreaEl, optionsAreaEl, feedbackAreaEl, hintButtonEl, newGameButtonEl, feedbackTextEl, fontSelectEl, scoringPreviewEl;
 
 /**
  * Get access to global game state variables
@@ -79,9 +79,10 @@ function initializeDOMElements() {
     hintButtonEl = document.getElementById('hint-button');
     newGameButtonEl = document.getElementById('new-game-button');
     fontSelectEl = document.getElementById('font-select');
+    scoringPreviewEl = document.getElementById('scoring-preview');
     
     // Validate that all required elements exist
-    if (!scoreDisplayEl || !questionAreaEl || !optionsAreaEl || !feedbackAreaEl || !hintButtonEl || !newGameButtonEl || !fontSelectEl) {
+    if (!scoreDisplayEl || !questionAreaEl || !optionsAreaEl || !feedbackAreaEl || !hintButtonEl || !newGameButtonEl || !fontSelectEl || !scoringPreviewEl) {
         throw new Error('Required DOM elements not found. Please check that index.html has all required elements.');
     }
     
@@ -290,6 +291,9 @@ function handleGuess(event, chosenOptionData) {
             }
         });
         
+        // Hide scoring preview
+        scoringPreviewEl.classList.remove('show');
+        
         // Show new game button
         newGameButtonEl.style.display = 'inline-block';
         
@@ -352,6 +356,9 @@ function handleGuess(event, chosenOptionData) {
                 }
             });
             
+            // Hide scoring preview
+            scoringPreviewEl.classList.remove('show');
+            
             // Disable hint button
             hintButtonEl.disabled = true;
             
@@ -381,6 +388,9 @@ function handleGuess(event, chosenOptionData) {
             
             // Remove the clicked element
             clickedElement.remove();
+            
+            // Update scoring preview for next attempt
+            updateScoringPreview();
             
             console.log(`Incorrect guess: ${chosenOptionData.value}. Guesses made: ${gameState.guessesMade}`);
         }
@@ -472,6 +482,9 @@ function handleHintClick() {
         hintButtonEl.disabled = true;
     }
     
+    // Update scoring preview to reflect hint usage
+    updateScoringPreview();
+    
     // Apply visual hint based on question type
     if (gameState.currentQuestion.type === 'identify_color') {
         // Update hex code options with colored hints
@@ -524,6 +537,44 @@ function handleFontChange() {
     }
     
     console.log('Font changed to:', selectedFont);
+}
+
+/**
+ * Updates the scoring preview to show potential points for a correct answer
+ * Takes into account current guess count and hint usage
+ */
+function updateScoringPreview() {
+    if (!scoringPreviewEl || questionOver) {
+        return;
+    }
+    
+    // Calculate what the next guess would be (current guesses + 1)
+    const nextGuessNumber = gameState.guessesMade + 1;
+    const potentialPoints = calculateScore(nextGuessNumber, gameState.hintUsed);
+    
+    let previewText = "";
+    
+    if (nextGuessNumber === 1) {
+        previewText = `First try: ${potentialPoints} points`;
+    } else if (nextGuessNumber === 2) {
+        previewText = `Second try: ${potentialPoints} points`;
+    } else if (nextGuessNumber === 3) {
+        previewText = `Last chance: ${potentialPoints} points`;
+    } else {
+        previewText = `No points remaining`;
+    }
+    
+    // Add hint information if relevant
+    if (!gameState.hintUsed && nextGuessNumber <= 3) {
+        const pointsWithoutHint = calculateScore(nextGuessNumber, false);
+        const pointsWithHint = calculateScore(nextGuessNumber, true);
+        if (pointsWithoutHint !== pointsWithHint) {
+            previewText += ` (${pointsWithHint} with hint)`;
+        }
+    }
+    
+    scoringPreviewEl.textContent = previewText;
+    scoringPreviewEl.classList.add('show');
 }
 
 /**
@@ -580,6 +631,9 @@ function startNewQuestion() {
     if (newGameButtonEl) {
         newGameButtonEl.style.display = 'none';
     }
+    
+    // Show and update scoring preview
+    updateScoringPreview();
     
     console.log("New question:", gameState.currentQuestion);
 }

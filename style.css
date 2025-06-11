@@ -72,6 +72,23 @@ body {
     margin-bottom: 10px;
 }
 
+/* Scoring preview styling */
+#scoring-preview {
+    font-size: 16px;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 15px;
+    padding: 8px 12px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    display: none;
+}
+
+#scoring-preview.show {
+    display: block;
+}
+
 /* Hex code text styling with prominent monospace font and text-stroke */
 .hex-code-text {
     font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
