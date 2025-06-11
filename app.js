@@ -268,8 +268,9 @@ function handleGuess(event, chosenOptionData) {
         // Update the score display
         displayScore();
         
-        // Show feedback with points earned
-        feedbackTextEl.textContent = `CORRECT! +${pointsAwarded}`;
+        // Show feedback with points earned and hex breakdown
+        const hexBreakdown = renderHexWithHint(gameState.currentQuestion.correctAnswerHex);
+        feedbackTextEl.innerHTML = `CORRECT! +${pointsAwarded}<br><br>HEX BREAKDOWN: ${hexBreakdown}`;
         
         // Remove all other incorrect options to show final state
         const allOptions = Array.from(optionsAreaEl.children);
@@ -295,12 +296,14 @@ function handleGuess(event, chosenOptionData) {
             // This was the 3rd incorrect guess - question over
             let finalFeedback = "";
             
+            const hexBreakdown = renderHexWithHint(gameState.currentQuestion.correctAnswerHex);
+            
             if (gameState.currentQuestion.type === 'identify_color') {
-                // Show correct hex code for identify_color
-                finalFeedback = `INCORRECT. The correct answer was ${gameState.currentQuestion.correctAnswerHex}. +0`;
+                // Show correct hex code for identify_color with breakdown
+                finalFeedback = `INCORRECT. The correct answer was ${gameState.currentQuestion.correctAnswerHex}. +0<br><br>HEX BREAKDOWN: ${hexBreakdown}`;
             } else if (gameState.currentQuestion.type === 'identify_swatch') {
-                // Show correct color swatch for identify_swatch
-                finalFeedback = `INCORRECT. The correct answer was <span class="inline-swatch" style="background-color: ${gameState.currentQuestion.correctAnswerHex}; width: 20px; height: 20px; display: inline-block; border-radius: 50%; border: 1px solid #000; margin: 0 5px; vertical-align: middle;"></span>. +0`;
+                // Show correct color swatch for identify_swatch with breakdown
+                finalFeedback = `INCORRECT. The correct answer was <span class="inline-swatch" style="background-color: ${gameState.currentQuestion.correctAnswerHex}; width: 20px; height: 20px; display: inline-block; border-radius: 50%; border: 1px solid #000; margin: 0 5px; vertical-align: middle;"></span>. +0<br><br>HEX BREAKDOWN: ${hexBreakdown}`;
             }
             
             feedbackTextEl.innerHTML = finalFeedback;
